@@ -13,6 +13,7 @@ projects.light.video=releaseVideoBase+"beauty-commercial.mp4";
 projects.boiling.video=releaseVideoBase+"hotpot-commercial.mp4";
 projects.sixlooks.video=releaseVideoBase+"fashion-transform.mp4";
 projects.spring.video=releaseVideoBase+"fashion-split.mp4";
+projects.lucky.video="https://nsepgwtfevchipym.public.blob.vercel-storage.com/%E3%80%8A%E4%BA%94%E5%B2%81%E5%B0%8F%E7%A6%8F%E6%98%9F%EF%BC%8C%E9%A1%BE%E5%AE%B6%E5%AE%A0%E4%B8%8A%E5%A4%A9%E3%80%8B%E6%88%90%E7%89%87.mp4";
 
 projects.lucky.video="";
 projects.velocity.video="";
