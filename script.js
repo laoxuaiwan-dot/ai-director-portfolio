@@ -94,7 +94,11 @@ let activeProjectVideo=null;
 let activeBufferTimer=null;
 const mobilePlayback=matchMedia('(max-width: 900px)').matches||navigator.connection?.saveData===true;
 if('scrollRestoration' in history)history.scrollRestoration='manual';
-addEventListener('pageshow',()=>{if(mobilePlayback&&!location.hash)scrollTo(0,0)});
+function showHomepageOnRootUrl(){
+  if(!location.hash)scrollTo(0,0);
+}
+showHomepageOnRootUrl();
+addEventListener('pageshow',showHomepageOnRootUrl);
 function markMediaWatermarks(root=document){
   root.querySelectorAll?.('video').forEach(media=>{
     const parent=media.parentElement;
@@ -109,7 +113,35 @@ function markMediaWatermarks(root=document){
     const topMark=mark.cloneNode(true);
     topMark.classList.add('media-watermark--top-left');
     parent.append(topMark);
+    if(parent.classList.contains('lazy-video')){
+      const position=()=>positionVideoWatermarks(parent);
+      media.addEventListener('loadedmetadata',position);
+      media.addEventListener('loadeddata',position);
+      new ResizeObserver(position).observe(media);
+      requestAnimationFrame(position);
+    }
   });
+}
+function positionVideoWatermarks(frame){
+  const media=frame?.querySelector('video');
+  const marks=frame?.querySelectorAll(':scope > .media-watermark');
+  if(!media||!marks?.length)return;
+  const mediaRect=media.getBoundingClientRect();
+  const frameRect=frame.getBoundingClientRect();
+  const ratio=media.videoWidth&&media.videoHeight?media.videoWidth/media.videoHeight:mediaRect.width/mediaRect.height;
+  const contentWidth=Math.min(mediaRect.width,mediaRect.height*ratio);
+  const contentHeight=contentWidth/ratio;
+  const contentLeft=mediaRect.left+(mediaRect.width-contentWidth)/2;
+  const contentTop=mediaRect.top+(mediaRect.height-contentHeight)/2;
+  const inset=14;
+  const rightMark=marks[0];
+  const topMark=marks[1];
+  rightMark.style.left=`${Math.max(0,contentLeft+contentWidth-frameRect.left-rightMark.offsetWidth-inset)}px`;
+  rightMark.style.top=`${Math.max(0,contentTop+contentHeight-frameRect.top-rightMark.offsetHeight-inset)}px`;
+  rightMark.style.right='auto';
+  rightMark.style.bottom='auto';
+  topMark.style.left=`${Math.max(0,contentLeft-frameRect.left+inset)}px`;
+  topMark.style.top=`${Math.max(0,contentTop-frameRect.top+inset)}px`;
 }
 markMediaWatermarks();
 const watermarkObserver=new MutationObserver(records=>records.forEach(record=>record.addedNodes.forEach(node=>{
@@ -214,6 +246,7 @@ document.addEventListener('click',event=>{
     status.classList.add('is-visible');
   });
   player.addEventListener('playing',()=>{
+    positionVideoWatermarks(frame);
     status.classList.remove('is-visible');
     setVideoPerformanceMode(true);
   });
