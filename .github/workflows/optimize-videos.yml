@@ -40,7 +40,7 @@ jobs:
           encode_mobile_video() {
             ffmpeg -hide_banner -y -i "$1" \
               -map 0:v:0 -map '0:a:0?' \
-              -vf "scale=w='if(gt(iw,ih),min(1280,iw),-2)':h='if(gt(iw,ih),-2,min(1280,ih))':force_original_aspect_ratio=decrease,fps=60" \
+              -vf "scale=w='if(gt(iw,ih),min(1280,iw),-2)':h='if(gt(iw,ih),-2,min(1280,ih))':force_original_aspect_ratio=decrease:force_divisible_by=2,fps=60" \
               -c:v libx264 -preset veryfast -crf 25 -maxrate 3.5M -bufsize 7M \
               -profile:v high -level 4.1 -pix_fmt yuv420p \
               -g 120 -keyint_min 120 -sc_threshold 0 \
