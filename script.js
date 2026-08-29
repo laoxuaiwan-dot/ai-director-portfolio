@@ -8,12 +8,12 @@ const projects={
 };
 
 const releaseVideoBase="https://github.com/laoxuaiwan-dot/ai-director-portfolio/releases/download/v1.0.0/";
-projects.velocity.video=releaseVideoBase+"laptop-web.mp4";
-projects.light.video=releaseVideoBase+"beauty-web.mp4";
-projects.boiling.video=releaseVideoBase+"hotpot-web.mp4";
-projects.sixlooks.video=releaseVideoBase+"fashion-transform-web.mp4";
-projects.spring.video=releaseVideoBase+"fashion-split-web.mp4";
-projects.lucky.video="https://github.com/laoxuaiwan-dot/ai-director-portfolio/releases/download/v1.0.0/drama-web.mp4";
+projects.velocity.video=releaseVideoBase+"laptop-commercial.mp4";
+projects.light.video=releaseVideoBase+"beauty-commercial.mp4";
+projects.boiling.video=releaseVideoBase+"hotpot-commercial.mp4";
+projects.sixlooks.video=releaseVideoBase+"fashion-transform.mp4";
+projects.spring.video=releaseVideoBase+"fashion-split.mp4";
+projects.lucky.video="https://nsepgwtfevchipym.public.blob.vercel-storage.com/%E3%80%8A%E4%BA%94%E5%B2%81%E5%B0%8F%E7%A6%8F%E6%98%9F%EF%BC%8C%E9%A1%BE%E5%AE%B6%E5%AE%A0%E4%B8%8A%E5%A4%A9%E3%80%8B%E6%88%90%E7%89%87.mp4";
 
 // Some files were flattened into the repository root by GitHub's web uploader.
 // Retry failed nested image URLs from the root. The immediate scan also catches
@@ -92,6 +92,12 @@ const prefersReduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 let activeProjectVideo=null;
 let activeBufferTimer=null;
+const mobilePlayback=matchMedia('(max-width: 900px)').matches||navigator.connection?.saveData===true;
+if('scrollRestoration' in history)history.scrollRestoration='manual';
+addEventListener('pageshow',()=>{if(mobilePlayback&&!location.hash)scrollTo(0,0)});
+function getProjectVideoSource(frame){
+  return mobilePlayback&&frame.dataset.videoMobile?frame.dataset.videoMobile:frame.dataset.video;
+}
 function setVideoPerformanceMode(enabled){
   document.body.classList.toggle('video-playing',Boolean(enabled));
 }
@@ -130,7 +136,8 @@ document.addEventListener('click',event=>{
   event.preventDefault();
   event.stopPropagation();
   const frame=playButton.closest('.lazy-video');
-  if(!frame?.dataset.video)return;
+  const source=getProjectVideoSource(frame);
+  if(!source)return;
   releaseProjectVideo();
   const player=document.createElement('video');
   const status=document.createElement('div');
@@ -140,7 +147,7 @@ document.addEventListener('click',event=>{
   player.playsInline=true;
   player.preload='auto';
   player.poster=frame.dataset.poster||'';
-  player.src=frame.dataset.video;
+  player.src=source;
   player.setAttribute('aria-label',frame.dataset.label||'项目成片');
   frame.replaceChildren(player,status);
   activeProjectVideo=player;
@@ -156,8 +163,9 @@ document.addEventListener('click',event=>{
   activeBufferTimer=setInterval(()=>{
     if(activeProjectVideo!==player){clearInterval(activeBufferTimer);return;}
     waited+=250;
-    const target=Number.isFinite(player.duration)&&player.duration<30?4:7;
-    if(getBufferedAhead(player)>=target||player.readyState===4||waited>=15000)beginPlayback();
+    const target=mobilePlayback?(Number.isFinite(player.duration)&&player.duration<30?1.5:3):(Number.isFinite(player.duration)&&player.duration<30?4:7);
+    const ready=mobilePlayback?player.readyState>=3:player.readyState===4;
+    if(getBufferedAhead(player)>=target||ready||waited>=(mobilePlayback?8000:15000))beginPlayback();
   },250);
   player.addEventListener('waiting',()=>{
     if(activeProjectVideo!==player)return;
