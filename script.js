@@ -92,6 +92,14 @@ const prefersReduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 let activeProjectVideo=null;
 let activeBufferTimer=null;
+function setVideoPerformanceMode(enabled){
+  document.body.classList.toggle('video-playing',Boolean(enabled));
+}
+function syncFullscreenVideoMode(){
+  const fullscreenElement=document.fullscreenElement||document.webkitFullscreenElement;
+  const isVideoFullscreen=fullscreenElement instanceof HTMLVideoElement||Boolean(fullscreenElement?.querySelector?.('video'));
+  document.documentElement.classList.toggle('video-fullscreen',isVideoFullscreen);
+}
 function getBufferedAhead(player){
   if(!player.buffered.length)return 0;
   for(let i=0;i<player.buffered.length;i++){
@@ -110,6 +118,7 @@ function releaseProjectVideo(){
   activeProjectVideo.pause();
   activeProjectVideo.removeAttribute('src');
   activeProjectVideo.load();
+  setVideoPerformanceMode(false);
   if(frame){
     frame.innerHTML=`<img src="${poster}" alt="${label}封面"><button class="lazy-video-play" type="button">播放成片 <span>▶</span></button>`;
   }
@@ -155,12 +164,19 @@ document.addEventListener('click',event=>{
     status.textContent='网络缓冲中…';
     status.classList.add('is-visible');
   });
-  player.addEventListener('playing',()=>status.classList.remove('is-visible'));
+  player.addEventListener('playing',()=>{
+    status.classList.remove('is-visible');
+    setVideoPerformanceMode(true);
+  });
+  player.addEventListener('pause',()=>setVideoPerformanceMode(false));
+  player.addEventListener('ended',()=>setVideoPerformanceMode(false));
   player.addEventListener('error',()=>{
     status.textContent='视频加载失败，请刷新后重试';
     status.classList.add('is-visible');
   });
 });
+document.addEventListener('fullscreenchange',syncFullscreenVideoMode);
+document.addEventListener('webkitfullscreenchange',syncFullscreenVideoMode);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)releaseProjectVideo()});
 addEventListener('pagehide',releaseProjectVideo);
 

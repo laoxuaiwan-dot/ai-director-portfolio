@@ -251,3 +251,15 @@
 .lazy-video-status.is-visible{opacity:1;transform:translate(-50%,0)}
 .work-card:hover .lazy-video>img{filter:none!important;transform:none!important}
 @media(max-width:560px){.lazy-video-play,.lazy-video-status{bottom:14px;padding:12px 15px;font-size:9px}}
+
+/* Playback performance mode: remove page compositing work while a film is playing. */
+body.video-playing .noise,
+body.video-playing .cursor-glow,
+html.video-fullscreen .noise,
+html.video-fullscreen .cursor-glow{display:none!important}
+body.video-playing .site-header.scrolled{backdrop-filter:none;background:#080909}
+body.video-playing .reveal,
+body.video-playing .work-media img{transition:none!important}
+body.video-playing *{animation-play-state:paused!important}
+.lazy-video>video:fullscreen,
+.lazy-video>video:-webkit-full-screen{width:100vw!important;height:100vh!important;max-width:none!important;max-height:none!important;object-fit:contain!important;background:#000!important;filter:none!important;transform:none!important}
