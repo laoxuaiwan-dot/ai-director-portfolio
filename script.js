@@ -91,8 +91,19 @@ const video=document.querySelector('#dialogVideo');
 const prefersReduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 let activeProjectVideo=null;
+let activeBufferTimer=null;
+function getBufferedAhead(player){
+  if(!player.buffered.length)return 0;
+  for(let i=0;i<player.buffered.length;i++){
+    if(player.currentTime>=player.buffered.start(i)&&player.currentTime<=player.buffered.end(i)){
+      return player.buffered.end(i)-player.currentTime;
+    }
+  }
+  return 0;
+}
 function releaseProjectVideo(){
   if(!activeProjectVideo)return;
+  clearInterval(activeBufferTimer);
   const frame=activeProjectVideo.closest('.lazy-video');
   const poster=frame?.dataset.poster||'';
   const label=frame?.dataset.label||'播放成片';
@@ -113,15 +124,42 @@ document.addEventListener('click',event=>{
   if(!frame?.dataset.video)return;
   releaseProjectVideo();
   const player=document.createElement('video');
-  player.controls=true;
+  const status=document.createElement('div');
+  status.className='lazy-video-status is-visible';
+  status.textContent='正在缓冲，请稍候…';
+  player.controls=false;
   player.playsInline=true;
   player.preload='auto';
   player.poster=frame.dataset.poster||'';
   player.src=frame.dataset.video;
   player.setAttribute('aria-label',frame.dataset.label||'项目成片');
-  frame.replaceChildren(player);
+  frame.replaceChildren(player,status);
   activeProjectVideo=player;
-  player.play().catch(()=>{});
+  player.load();
+  let waited=0;
+  const beginPlayback=()=>{
+    if(activeProjectVideo!==player)return;
+    clearInterval(activeBufferTimer);
+    status.classList.remove('is-visible');
+    player.controls=true;
+    player.play().catch(()=>{});
+  };
+  activeBufferTimer=setInterval(()=>{
+    if(activeProjectVideo!==player){clearInterval(activeBufferTimer);return;}
+    waited+=250;
+    const target=Number.isFinite(player.duration)&&player.duration<30?4:7;
+    if(getBufferedAhead(player)>=target||player.readyState===4||waited>=15000)beginPlayback();
+  },250);
+  player.addEventListener('waiting',()=>{
+    if(activeProjectVideo!==player)return;
+    status.textContent='网络缓冲中…';
+    status.classList.add('is-visible');
+  });
+  player.addEventListener('playing',()=>status.classList.remove('is-visible'));
+  player.addEventListener('error',()=>{
+    status.textContent='视频加载失败，请刷新后重试';
+    status.classList.add('is-visible');
+  });
 });
 document.addEventListener('visibilitychange',()=>{if(document.hidden)releaseProjectVideo()});
 addEventListener('pagehide',releaseProjectVideo);
