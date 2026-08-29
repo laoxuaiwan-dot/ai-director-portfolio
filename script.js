@@ -95,6 +95,26 @@ let activeBufferTimer=null;
 const mobilePlayback=matchMedia('(max-width: 900px)').matches||navigator.connection?.saveData===true;
 if('scrollRestoration' in history)history.scrollRestoration='manual';
 addEventListener('pageshow',()=>{if(mobilePlayback&&!location.hash)scrollTo(0,0)});
+function markMediaWatermarks(root=document){
+  root.querySelectorAll?.('img,video').forEach(media=>{
+    const parent=media.parentElement;
+    if(!parent||parent.querySelector(':scope > .media-watermark'))return;
+    parent.classList.add('media-watermark-host');
+    const mark=document.createElement('span');
+    mark.className='media-watermark';
+    mark.textContent='xuyang';
+    mark.setAttribute('aria-hidden','true');
+    parent.append(mark);
+    const topMark=mark.cloneNode(true);
+    topMark.classList.add('media-watermark--top-left');
+    parent.append(topMark);
+  });
+}
+markMediaWatermarks();
+const watermarkObserver=new MutationObserver(records=>records.forEach(record=>record.addedNodes.forEach(node=>{
+  if(node.nodeType===1)markMediaWatermarks(node);
+})));
+watermarkObserver.observe(document.body,{childList:true,subtree:true});
 document.querySelectorAll('.work-media img').forEach((img,index)=>{
   img.decoding='async';
   if(index>0)img.loading='lazy';
@@ -146,15 +166,23 @@ document.addEventListener('click',event=>{
   releaseProjectVideo();
   const player=document.createElement('video');
   const status=document.createElement('div');
+  const fullscreenButton=document.createElement('button');
   status.className='lazy-video-status is-visible';
   status.textContent='正在缓冲，请稍候…';
+  fullscreenButton.className='lazy-video-fullscreen';
+  fullscreenButton.type='button';
+  fullscreenButton.textContent='全屏';
+  fullscreenButton.setAttribute('aria-label','全屏播放');
   player.controls=false;
+  player.controlsList='nofullscreen nodownload noremoteplayback';
+  player.disablePictureInPicture=true;
   player.playsInline=true;
   player.preload=mobilePlayback?'metadata':'auto';
   player.poster=frame.dataset.poster||'';
   player.src=source;
   player.setAttribute('aria-label',frame.dataset.label||'项目成片');
-  frame.replaceChildren(player,status);
+  frame.replaceChildren(player,status,fullscreenButton);
+  markMediaWatermarks(frame);
   activeProjectVideo=player;
   player.load();
   let waited=0;
@@ -186,6 +214,19 @@ document.addEventListener('click',event=>{
   player.addEventListener('error',()=>{
     status.textContent='视频加载失败，请刷新后重试';
     status.classList.add('is-visible');
+  });
+  fullscreenButton.addEventListener('click',async()=>{
+    try{
+      if(document.fullscreenElement||document.webkitFullscreenElement){
+        await (document.exitFullscreen?.()||document.webkitExitFullscreen?.());
+      }else if(frame.requestFullscreen){
+        await frame.requestFullscreen();
+      }else if(frame.webkitRequestFullscreen){
+        frame.webkitRequestFullscreen();
+      }else if(player.requestFullscreen){
+        await player.requestFullscreen();
+      }
+    }catch(_e){}
   });
 });
 document.addEventListener('fullscreenchange',syncFullscreenVideoMode);

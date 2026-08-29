@@ -263,3 +263,15 @@ body.video-playing .work-media img{transition:none!important}
 body.video-playing *{animation-play-state:paused!important}
 .lazy-video>video:fullscreen,
 .lazy-video>video:-webkit-full-screen{width:100vw!important;height:100vh!important;max-width:none!important;max-height:none!important;object-fit:contain!important;background:#000!important;filter:none!important;transform:none!important}
+.media-watermark-host{position:relative!important}
+.media-watermark{position:absolute;right:14px;bottom:12px;z-index:8;pointer-events:none;color:rgba(255,255,255,.3);font:600 10px/1 "Arial Narrow","Helvetica Neue",Arial,sans-serif;letter-spacing:.18em;text-transform:lowercase;text-shadow:0 1px 3px rgba(0,0,0,.45)}
+.media-watermark-host>.media-watermark{display:block}
+.media-watermark--top-left{right:auto;bottom:auto;left:14px;top:12px}
+.lazy-video-fullscreen{position:absolute;right:14px;top:14px;z-index:9;border:1px solid rgba(255,255,255,.25);border-radius:999px;background:rgba(5,7,7,.7);color:rgba(255,255,255,.86);padding:8px 11px;font-size:9px;letter-spacing:.1em;cursor:pointer;opacity:0;transition:opacity .2s}
+.lazy-video:hover .lazy-video-fullscreen,.lazy-video:focus-within .lazy-video-fullscreen,.lazy-video-fullscreen:focus{opacity:1}
+.lazy-video-fullscreen:hover{background:rgba(129,217,230,.28)}
+.lazy-video:fullscreen,.lazy-video:-webkit-full-screen{width:100vw!important;height:100vh!important;background:#000!important;display:grid!important;place-items:center!important}
+.lazy-video:fullscreen>video,.lazy-video:-webkit-full-screen>video{width:100%!important;height:100%!important;object-fit:contain!important}
+.lazy-video:fullscreen>.media-watermark,.lazy-video:-webkit-full-screen>.media-watermark{right:24px;bottom:22px;font-size:12px;color:rgba(255,255,255,.34)}
+@media(max-width:900px){.lazy-video-fullscreen{opacity:1;right:10px;top:10px;padding:7px 9px}.media-watermark{right:10px;bottom:9px;font-size:9px}}
+@media(max-width:900px){.media-watermark--top-left{left:10px;top:9px}}
