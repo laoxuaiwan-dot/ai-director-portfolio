@@ -88,35 +88,43 @@ const menuToggle=document.querySelector('.menu-toggle');
 const mobileMenu=document.querySelector('.mobile-menu');
 const dialog=document.querySelector('#projectDialog');
 const video=document.querySelector('#dialogVideo');
-const heroReel=document.querySelector('#heroReel');
 const prefersReduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const reelSources=[
-  [projects.sixlooks.video,'女装多风格变装广告成品/分镜图/静帧2.webp'],
-  [projects.spring.video,'同机位户外女装展示成品/服装平铺图/薄荷绿肌理感宽松开衫+浅蓝垂感长裙+棕色低跟鞋.png']
-];
-let reelIndex=0;
-let reelTimer;
-function playNextReel(){if(!heroReel||prefersReduced)return;clearTimeout(reelTimer);const [src,poster]=reelSources[reelIndex%reelSources.length];heroReel.poster=poster;heroReel.src=src;heroReel.load();heroReel.volume=1;heroReel.muted=false;heroReel.play().catch(()=>{heroReel.muted=true;heroReel.play().catch(()=>{})});reelIndex++;reelTimer=setTimeout(playNextReel,18000);}
-if(heroReel){heroReel.addEventListener('ended',playNextReel);playNextReel();}
-
-document.querySelectorAll('.work-media video').forEach(v=>{
-  v.pause();
-  v.removeAttribute('loop');
-  v.defaultMuted=false;
-  v.muted=false;
-  v.volume=1;
-  v.controls=true;
-  v.preload='metadata';
-});
-
-function enableVideoSound(){
-  document.querySelectorAll('video').forEach(v=>{v.defaultMuted=false;v.muted=false;v.volume=1});
-  removeEventListener('pointerdown',enableVideoSound,true);
-  removeEventListener('keydown',enableVideoSound,true);
+let activeProjectVideo=null;
+function releaseProjectVideo(){
+  if(!activeProjectVideo)return;
+  const frame=activeProjectVideo.closest('.lazy-video');
+  const poster=frame?.dataset.poster||'';
+  const label=frame?.dataset.label||'播放成片';
+  activeProjectVideo.pause();
+  activeProjectVideo.removeAttribute('src');
+  activeProjectVideo.load();
+  if(frame){
+    frame.innerHTML=`<img src="${poster}" alt="${label}封面"><button class="lazy-video-play" type="button">播放成片 <span>▶</span></button>`;
+  }
+  activeProjectVideo=null;
 }
-addEventListener('pointerdown',enableVideoSound,true);
-addEventListener('keydown',enableVideoSound,true);
+document.addEventListener('click',event=>{
+  const playButton=event.target.closest('.lazy-video-play');
+  if(!playButton)return;
+  event.preventDefault();
+  event.stopPropagation();
+  const frame=playButton.closest('.lazy-video');
+  if(!frame?.dataset.video)return;
+  releaseProjectVideo();
+  const player=document.createElement('video');
+  player.controls=true;
+  player.playsInline=true;
+  player.preload='auto';
+  player.poster=frame.dataset.poster||'';
+  player.src=frame.dataset.video;
+  player.setAttribute('aria-label',frame.dataset.label||'项目成片');
+  frame.replaceChildren(player);
+  activeProjectVideo=player;
+  player.play().catch(()=>{});
+});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)releaseProjectVideo()});
+addEventListener('pagehide',releaseProjectVideo);
 
 addEventListener('scroll',()=>header.classList.toggle('scrolled',scrollY>30),{passive:true});
 menuToggle.addEventListener('click',()=>{const open=!mobileMenu.classList.contains('open');mobileMenu.classList.toggle('open',open);mobileMenu.setAttribute('aria-hidden',String(!open));menuToggle.setAttribute('aria-expanded',String(open));});
