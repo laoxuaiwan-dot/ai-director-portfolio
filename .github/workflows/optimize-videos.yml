@@ -1,0 +1,109 @@
+name: Optimize portfolio videos
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  optimize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+
+    steps:
+      - name: Checkout website
+        uses: actions/checkout@v4
+
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Download original films
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p original-video web-video
+          gh release download v1.0.0 --dir original-video \
+            --pattern laptop-commercial.mp4 \
+            --pattern beauty-commercial.mp4 \
+            --pattern hotpot-commercial.mp4 \
+            --pattern fashion-transform.mp4 \
+            --pattern fashion-split.mp4
+          curl --fail --location --retry 5 --retry-delay 5 \
+            'https://nsepgwtfevchipym.public.blob.vercel-storage.com/%E3%80%8A%E4%BA%94%E5%B2%81%E5%B0%8F%E7%A6%8F%E6%98%9F%EF%BC%8C%E9%A1%BE%E5%AE%B6%E5%AE%A0%E4%B8%8A%E5%A4%A9%E3%80%8B%E6%88%90%E7%89%87.mp4' \
+            --output original-video/drama-original.mp4
+
+      - name: Create 1080p web versions
+        shell: bash
+        run: |
+          set -euo pipefail
+          encode_web_video() {
+            ffmpeg -hide_banner -y -i "$1" \
+              -map 0:v:0 -map '0:a:0?' \
+              -vf "scale=w='if(gt(iw,ih),min(1920,iw),-2)':h='if(gt(iw,ih),-2,min(1920,ih))':force_original_aspect_ratio=decrease,fps=60" \
+              -c:v libx264 -preset veryfast -crf 23 -maxrate 8M -bufsize 16M \
+              -profile:v high -level 4.1 -pix_fmt yuv420p \
+              -g 120 -keyint_min 120 -sc_threshold 0 \
+              -c:a aac -b:a 128k -ac 2 \
+              -movflags +faststart "$2"
+          }
+
+          encode_web_video original-video/laptop-commercial.mp4 web-video/laptop-web.mp4
+          encode_web_video original-video/beauty-commercial.mp4 web-video/beauty-web.mp4
+          encode_web_video original-video/hotpot-commercial.mp4 web-video/hotpot-web.mp4
+          encode_web_video original-video/fashion-transform.mp4 web-video/fashion-transform-web.mp4
+          encode_web_video original-video/fashion-split.mp4 web-video/fashion-split-web.mp4
+          encode_web_video original-video/drama-original.mp4 web-video/drama-web.mp4
+
+      - name: Verify web videos
+        run: |
+          for video in web-video/*.mp4; do
+            ffprobe -v error -select_streams v:0 \
+              -show_entries stream=codec_name,width,height,pix_fmt,r_frame_rate \
+              -of default=noprint_wrappers=1 "$video"
+          done
+
+      - name: Upload optimized films to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload v1.0.0 web-video/*.mp4 --clobber
+
+      - name: Switch website to optimized films
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const files = ['index.html', 'script.js'];
+          const release = 'https://github.com/laoxuaiwan-dot/ai-director-portfolio/releases/download/v1.0.0/';
+          const replacements = [
+            ['laptop-commercial.mp4', 'laptop-web.mp4'],
+            ['beauty-commercial.mp4', 'beauty-web.mp4'],
+            ['hotpot-commercial.mp4', 'hotpot-web.mp4'],
+            ['fashion-transform.mp4', 'fashion-transform-web.mp4'],
+            ['fashion-split.mp4', 'fashion-split-web.mp4']
+          ];
+
+          for (const file of files) {
+            let source = fs.readFileSync(file, 'utf8');
+            for (const [from, to] of replacements) source = source.replaceAll(from, to);
+            source = source.replace(
+              /https:\/\/nsepgwtfevchipym\.public\.blob\.vercel-storage\.com\/[^"']+\.mp4/g,
+              release + 'drama-web.mp4'
+            );
+            fs.writeFileSync(file, source);
+          }
+          NODE
+
+      - name: Publish optimized video links
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add index.html script.js
+          if git diff --cached --quiet; then
+            echo 'Website already uses optimized videos.'
+          else
+            git commit -m '使用1080p网页视频解决全屏掉帧'
+            git push
+          fi
