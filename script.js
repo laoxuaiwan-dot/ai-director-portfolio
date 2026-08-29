@@ -7,6 +7,13 @@ const projects={
   lucky:{number:"06",type:"AI NARRATIVE / EP.01",title:"3D短剧《五岁小福星，顾家宠上天》",intro:"不是只生成一个镜头，而是搭建一个能连续讲故事的世界。从五岁女孩的面孔，到暴雨中的身份牌和顾家客厅的暖光，每个资产都服务于叙事连续性。",video:"AI漫剧成品/短剧/《五岁小福星，顾家宠上天》成片.mp4",brief:"故事梗概：\n前世顶尖金融分析师林念念，遭未婚夫周启明构陷，蒙受挪用公款污名，母亲离世，自己重病含恨而终。一朝重生，她变成无家可归的五岁孤女林念念。\n\n暴雨之夜，在顾氏集团项目签约现场，拥有成年人心智的她一眼识破合同暗藏财务造假隐患，及时阻止顾氏签下会背负三十亿巨额债务的陷阱合同，就此闯入顾家众人的视野。\n\n无监护人的念念被顾家申请临时照护，住进顾家。凭借前世专业的金融能力，她不断挖出合同背后篡改文件、过账造假的层层证据。顾家旁支顾明德父女为掩盖利益黑幕，威逼利诱念念改口，甚至当众发难，顾家四兄弟顾砚川、顾谨言、顾修远、顾沉舟全力护下念念，拿出录音、服务器数据等实据反击，冻结旁支可疑资金。\n\n顺着线索追查，众人发现这份害人合同的源头，正是前世毁掉念念一生的仇人周启明。一边是顾家全员撑腰守护，念念终于拥有可以依靠的家；另一边仇人已经察觉到她的存在，暗流悄然涌动。重生归来的五岁小福星，不再是任人宰割的受害者，在顾家的庇护下，开启向仇人复仇的爽感故事。\n\n主要人物：\n林念念：外表 5 岁，灵魂 25 岁，前世金融分析师，遭未婚夫陷害惨死，重生为孤女，聪慧敏锐，既有孩童的脆弱，又带着成年人的复仇执念。\n顾砚川：28 岁，顾氏集团总裁，高冷果决，念念的核心保护者，重是非轻宗族情面。\n顾谨言：31 岁，顾氏财务负责人，严谨冷静，配合念念核验财务漏洞。\n顾修远：29 岁，顾家律师，腹黑温和，负责取证、处理法律手续。\n顾沉舟：26 岁，科技公司老板，性格跳脱，技术能力强，调取服务器、录音等关键证据。\n顾明德 & 顾婉柔：顾家旁支，利益既得者，是本次造假合同事件的家族内鬼。\n周启明：幕后反派，启明资本总监，念念前世未婚夫，一手策划财务陷害，诡计多端。",process:"世界观与角色设定 → 场景/道具资产库 → 空间位置图与镜头调度 → 角色连续性修复 → 成片剪辑与片尾悬念。",stack:"GPT Image（角色、场景、道具设定） · Seedance 2.0（叙事镜头） · Kling（动作与表演） · Premiere Pro · After Effects",prompt:"cinematic 3D animated drama, five-year-old Chinese girl in rain, wealthy family entrance, warm interior contrast, expressive eyes, consistent character identity, 21:9",storyboard:[],s:"AI 漫剧容易出现角色年龄、脸型、服装、道具和空间关系漂移，本项目还横跨重生悬疑、暴雨救助、医院照护和豪门冲突。",t:"建立可连续生成、可供分镜复用的第一集世界观资产系统，同时支撑完整成片。",a:"以资产列表作为制作中枢，锁定角色唯一形象基准，再建立公司会议室、医院走廊、出租屋、暴雨慈善中心、顾氏大厦、儿童病房、顾家客厅、顾家会议室和片尾办公室等场景；同步登记合同附录、身份牌/旧布包/钢笔、死亡通知、财务报表、录音手机等关键道具。统一采用超精致三维动画电影风、21:9宽银幕、场景实际光源与60:30:10色彩原则，并用空间位置图固定走位、机位、视线轴和道具区。资产列表还明确复用规则、白底变体规则和连续性锁定规则，避免重复生成与身份漂移。",r:"形成一套可扩展的AI漫剧生产管线，并交付第一集成片与完整资产清单。相较单条视频，项目成果更能证明AI导演的系统能力：从人物设定、场景调度、关键道具到连续性检查，所有生成决策都有可追溯依据。",tags:["世界观搭建","角色连续性","场景调度","道具叙事","长线制作管理"]}
 };
 
+const releaseVideoBase="https://github.com/laoxuaiwan-dot/ai-director-portfolio/releases/download/v1.0.0/";
+projects.velocity.video=releaseVideoBase+"laptop-commercial.mp4";
+projects.light.video=releaseVideoBase+"beauty-commercial.mp4";
+projects.boiling.video=releaseVideoBase+"hotpot-commercial.mp4";
+projects.sixlooks.video=releaseVideoBase+"fashion-transform.mp4";
+projects.spring.video=releaseVideoBase+"fashion-split.mp4";
+
 projects.lucky.video="";
 projects.velocity.video="";
 projects.light.video="";
