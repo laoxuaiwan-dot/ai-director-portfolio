@@ -96,7 +96,7 @@ const mobilePlayback=matchMedia('(max-width: 900px)').matches||navigator.connect
 if('scrollRestoration' in history)history.scrollRestoration='manual';
 addEventListener('pageshow',()=>{if(mobilePlayback&&!location.hash)scrollTo(0,0)});
 function markMediaWatermarks(root=document){
-  root.querySelectorAll?.('img,video').forEach(media=>{
+  root.querySelectorAll?.('video').forEach(media=>{
     const parent=media.parentElement;
     if(!parent||parent.querySelector(':scope > .media-watermark'))return;
     parent.classList.add('media-watermark-host');
