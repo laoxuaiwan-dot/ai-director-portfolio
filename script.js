@@ -100,6 +100,7 @@ function markMediaWatermarks(root=document){
     const parent=media.parentElement;
     if(!parent||parent.querySelector(':scope > .media-watermark'))return;
     parent.classList.add('media-watermark-host');
+    if(getComputedStyle(parent).position==='static')parent.classList.add('media-watermark-host--static');
     const mark=document.createElement('span');
     mark.className='media-watermark';
     mark.textContent='xuyang';
@@ -115,10 +116,15 @@ const watermarkObserver=new MutationObserver(records=>records.forEach(record=>re
   if(node.nodeType===1)markMediaWatermarks(node);
 })));
 watermarkObserver.observe(document.body,{childList:true,subtree:true});
-document.querySelectorAll('.work-media img').forEach((img,index)=>{
+document.querySelectorAll('img').forEach((img,index)=>{
   img.decoding='async';
-  if(index>0)img.loading='lazy';
-  else img.fetchPriority='high';
+  if(img.classList.contains('hero-poster')){
+    img.loading='eager';
+    img.fetchPriority='high';
+  }else{
+    img.loading='lazy';
+    img.fetchPriority='low';
+  }
 });
 function getProjectVideoSource(frame){
   return mobilePlayback&&frame.dataset.videoMobile?frame.dataset.videoMobile:frame.dataset.video;
@@ -171,13 +177,14 @@ document.addEventListener('click',event=>{
   status.textContent='正在缓冲，请稍候…';
   fullscreenButton.className='lazy-video-fullscreen';
   fullscreenButton.type='button';
-  fullscreenButton.textContent='全屏';
+  fullscreenButton.textContent='⛶';
   fullscreenButton.setAttribute('aria-label','全屏播放');
+  fullscreenButton.title='全屏播放';
   player.controls=false;
-  player.controlsList='nofullscreen nodownload noremoteplayback';
+  player.controlsList='nodownload noremoteplayback';
   player.disablePictureInPicture=true;
   player.playsInline=true;
-  player.preload=mobilePlayback?'metadata':'auto';
+  player.preload='auto';
   player.poster=frame.dataset.poster||'';
   player.src=source;
   player.setAttribute('aria-label',frame.dataset.label||'项目成片');
@@ -196,10 +203,11 @@ document.addEventListener('click',event=>{
   activeBufferTimer=setInterval(()=>{
     if(activeProjectVideo!==player){clearInterval(activeBufferTimer);return;}
     waited+=250;
-    const target=mobilePlayback?(Number.isFinite(player.duration)&&player.duration<30?1.5:3):(Number.isFinite(player.duration)&&player.duration<30?4:7);
+    const target=mobilePlayback?.75:(Number.isFinite(player.duration)&&player.duration<30?3:5);
     const ready=mobilePlayback?player.readyState>=3:player.readyState===4;
-    if(getBufferedAhead(player)>=target||ready||waited>=(mobilePlayback?8000:15000))beginPlayback();
+    if(getBufferedAhead(player)>=target||ready||waited>=(mobilePlayback?3500:12000))beginPlayback();
   },250);
+  player.addEventListener('canplay',()=>{if(mobilePlayback)beginPlayback()},{once:true});
   player.addEventListener('waiting',()=>{
     if(activeProjectVideo!==player)return;
     status.textContent='网络缓冲中…';
