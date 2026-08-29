@@ -15,21 +15,20 @@ projects.sixlooks.video=releaseVideoBase+"fashion-transform.mp4";
 projects.spring.video=releaseVideoBase+"fashion-split.mp4";
 projects.lucky.video="https://nsepgwtfevchipym.public.blob.vercel-storage.com/%E3%80%8A%E4%BA%94%E5%B2%81%E5%B0%8F%E7%A6%8F%E6%98%9F%EF%BC%8C%E9%A1%BE%E5%AE%B6%E5%AE%A0%E4%B8%8A%E5%A4%A9%E3%80%8B%E6%88%90%E7%89%87.mp4";
 
-// The first GitHub web upload flattened some asset folders. If a nested image
-// is missing online, retry the already-uploaded file from the repository root.
-document.addEventListener("error",event=>{
-  const image=event.target;
+// Some files were flattened into the repository root by GitHub's web uploader.
+// Retry failed nested image URLs from the root. The immediate scan also catches
+// images whose error event fired before this bottom-of-page script was loaded.
+function retryImageFromRoot(image){
   if(!(image instanceof HTMLImageElement)||image.dataset.rootFallback)return;
   const original=image.getAttribute("src")||"";
   if(!original.includes("/"))return;
   image.dataset.rootFallback="1";
   image.src=original.split("/").pop();
-},true);
-
-projects.lucky.video="";
-projects.velocity.video="";
-projects.light.video="";
-projects.boiling.video="";
+}
+document.addEventListener("error",event=>retryImageFromRoot(event.target),true);
+document.querySelectorAll("img").forEach(image=>{
+  if(image.complete&&!image.naturalWidth)retryImageFromRoot(image);
+});
 projects.velocity.stack="GPT Image（视觉探索） · Seedance 2.0 / Kling（镜头生成） · 剪映、Premiere（剪辑、后期）";
 projects.light.stack="GPT Image（视觉提案） · Seedance 2.0（液滴与材质镜头） · Minimax（口播人声）";
 projects.boiling.stack="Seedream 5.0（分镜视觉） · Seedance 2.0（食材动态） · Minimax（口播人声）";
@@ -93,8 +92,8 @@ const heroReel=document.querySelector('#heroReel');
 const prefersReduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const reelSources=[
-  ['女装多风格变装广告成品/多风格女装变装成品.mp4','女装多风格变装广告成品/分镜图/静帧2.png'],
-  ['同机位户外女装展示成品/同机位户外女装展示.mp4','同机位户外女装展示成品/服装平铺图/薄荷绿肌理感宽松开衫+浅蓝垂感长裙+棕色低跟鞋.png']
+  [projects.sixlooks.video,'女装多风格变装广告成品/分镜图/静帧2.png'],
+  [projects.spring.video,'同机位户外女装展示成品/服装平铺图/薄荷绿肌理感宽松开衫+浅蓝垂感长裙+棕色低跟鞋.png']
 ];
 let reelIndex=0;
 let reelTimer;
