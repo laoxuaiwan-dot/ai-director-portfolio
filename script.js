@@ -95,6 +95,11 @@ let activeBufferTimer=null;
 const mobilePlayback=matchMedia('(max-width: 900px)').matches||navigator.connection?.saveData===true;
 if('scrollRestoration' in history)history.scrollRestoration='manual';
 addEventListener('pageshow',()=>{if(mobilePlayback&&!location.hash)scrollTo(0,0)});
+document.querySelectorAll('.work-media img').forEach((img,index)=>{
+  img.decoding='async';
+  if(index>0)img.loading='lazy';
+  else img.fetchPriority='high';
+});
 function getProjectVideoSource(frame){
   return mobilePlayback&&frame.dataset.videoMobile?frame.dataset.videoMobile:frame.dataset.video;
 }
@@ -145,7 +150,7 @@ document.addEventListener('click',event=>{
   status.textContent='正在缓冲，请稍候…';
   player.controls=false;
   player.playsInline=true;
-  player.preload='auto';
+  player.preload=mobilePlayback?'metadata':'auto';
   player.poster=frame.dataset.poster||'';
   player.src=source;
   player.setAttribute('aria-label',frame.dataset.label||'项目成片');
