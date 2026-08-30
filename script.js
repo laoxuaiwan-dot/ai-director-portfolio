@@ -148,15 +148,32 @@ const watermarkObserver=new MutationObserver(records=>records.forEach(record=>re
   if(node.nodeType===1)markMediaWatermarks(node);
 })));
 watermarkObserver.observe(document.body,{childList:true,subtree:true});
-document.querySelectorAll('img').forEach((img,index)=>{
+const imageLoadQueue=new WeakSet();
+function prepareImage(img,priority='low'){
+  if(!img||imageLoadQueue.has(img))return;
+  imageLoadQueue.add(img);
   img.decoding='async';
-  if(img.classList.contains('hero-poster')){
-    img.loading='eager';
-    img.fetchPriority='high';
-  }else{
-    img.loading='lazy';
-    img.fetchPriority='low';
+  img.loading='eager';
+  img.fetchPriority=priority;
+  if(!img.dataset.retryBound){
+    img.dataset.retryBound='1';
+    img.addEventListener('error',()=>{
+      if(img.dataset.retried)return;
+      img.dataset.retried='1';
+      const src=img.currentSrc||img.src;
+      if(src)img.src=src+(src.includes('?')?'&':'?')+'retry=1';
+    },{once:true});
   }
+}
+const imagePreloader=new IntersectionObserver(entries=>entries.forEach(entry=>{
+  if(entry.isIntersecting){
+    prepareImage(entry.target);
+    imagePreloader.unobserve(entry.target);
+  }
+}),{rootMargin:'1200px 0px'});
+document.querySelectorAll('img').forEach(img=>{
+  if(img.classList.contains('hero-poster'))prepareImage(img,'high');
+  else imagePreloader.observe(img);
 });
 function getProjectVideoSource(frame){
   return mobilePlayback&&frame.dataset.videoMobile?frame.dataset.videoMobile:frame.dataset.video;
@@ -359,6 +376,7 @@ function renderInlineProjects(){
       <section class="inline-section"><small>04 / TOOL STACK</small><h4>工具栈</h4><p>${p.stack}</p></section>
       <section class="inline-section inline-storyboard-section"><small>05 / STORYBOARD</small><h4>分镜过程物料</h4><div class="storyboard-content">${assetSubtitle}<div class="inline-storyboard">${storyboard}</div></div></section>`;
     card.appendChild(details);
+    details.querySelectorAll('img').forEach(img=>imagePreloader.observe(img));
   });
 }
 renderInlineProjects();
