@@ -1,6 +1,6 @@
 const projects={
-  velocity:{number:"01",type:"TECH COMMERCIAL / 60S",title:"速度，成为创作本能",intro:"把参数拍成观众能感受到的速度。用“渲染焦虑—性能爆发—轻薄出行—正品信任”的四段节奏，让 Pro14GT 从配置表变成创作者与玩家都能感知的高能工具。",video:"笔记本电脑广告成品/笔记本电脑成品.mp4",brief:"联想新品需要一支约 60 秒影视级商业广告，面向创作者与年轻玩家，兼顾产品卖点与线上投放节奏。",process:"脚本与 16 镜头分镜 → AI 生成工作室、天台与影棚场景 → 创作者/玩家角色统一 → 参数字幕与音乐节奏 → 剪辑、调色、成片输出。",stack:"Seedance 2.0 / Kling（镜头生成） · GPT Image（视觉探索） · Premiere Pro（剪辑） · After Effects（字幕包装） · DaVinci Resolve（调色）",prompt:"cinematic laptop commercial, creator under rendering pressure, 240Hz gaming performance, cool blue studio lighting, premium product hero shot, consistent character and product design, 16:9",storyboard:["笔记本电脑广告成品/场景图/工作室.png","笔记本电脑广告成品/场景图/天台.png","笔记本电脑广告成品/工作流.png","笔记本电脑广告成品/人物图/创作者与玩家.png"],s:"创作者、办公多任务用户与玩家同时面对渲染等待、配置难判断、游戏掉帧、设备厚重和续航焦虑。单纯罗列参数无法让观众感知差异。",t:"在约 60 秒内把产品痛点转化为可视化情节，建立从注意力抓取、性能证明、轻薄便携到购买信任的完整说服链。",a:"用 16 镜头四段式结构推进：渲染 99% 建立焦虑；代码、建模、竞速与响应参数完成性能证明；天台和悬浮产品镜头转换到轻薄出行；最后以影棚 Hero Shot 与官方保证收口。",r:"交付完整成片、脚本、16 镜头映射、人物与场景设定及工作流。复杂参数被转译为等待、创作、竞速、出行与购买安心五种观众体验。",tags:["卖点叙事","性能可视化","节奏分层","资产统一"]},
-  light:{number:"02",type:"BEAUTY TVC / 30S",title:"一滴光的双重奏",intro:"以黑色丝绒和琥珀金光建立奢华语法，用液滴、泵头、瓶身纹理与肌肤高光，把“双相精准相遇”拍成一场从产品到肌肤的光泽仪式。",video:"护肤品广告成品/娇韵诗双萃精华广告成品.mp4",brief:"娇韵诗新品需要一支 30 秒高端 TVC，传达双相精华机制与年轻肌肤的光泽感，延续低饱和奢华美学。",process:"品牌视觉锚点 → 黑色丝绒与戏剧侧光测试 → 产品微距与液滴镜头 → 模特使用动作 → Hero Shot、Logo 与 Slogan 收尾。",stack:"GPT Image（视觉提案） · Seedance 2.0（液滴与材质镜头） · Premiere Pro · After Effects · DaVinci Resolve",prompt:"luxury beauty TVC, amber dual serum bottle, black velvet studio, dramatic side light, suspended golden droplets, low saturation, ARRI Alexa look, precise product label",storyboard:["护肤品广告成品/娇韵诗双萃精华护肤品.png","护肤品广告成品/屏幕截图 2026-08-26 103820.png"],s:"Double Serum 需要同时传达双相机制、奢华感与肌肤焕亮体验；瓶身、Logo 和金属结构又要求高一致性。",t:"按高端 TVC 规格，在 30 秒、16 镜头内建立可识别的品牌世界，让观众从看见光自然过渡到感受肌肤光泽。",a:"锁定产品、模特与黑色丝绒影棚三大锚点，以金色和琥珀色为唯一高光。镜头从晨雾、丝绒侧光和悬停液滴推进到微距结构、按压、滴落、上脸和 Hero Shot。",r:"形成从品牌策略、产品机制到画面执行的闭环；成片、产品基准图与完整提案板共同构成可验证交付。",tags:["品牌视觉系统","微距产品叙事","材质光线","高端广告节奏","产品一致性"]},
+  velocity:{number:"01",type:"TECH COMMERCIAL / 60S",title:"速度，成为创作本能",intro:"把参数拍成观众能感受到的速度。用“渲染焦虑—性能爆发—轻薄出行—正品信任”的四段节奏，让 Pro14GT 从配置表变成创作者与玩家都能感知的高能工具。",video:"笔记本电脑广告成品/笔记本电脑成品.mp4",brief:"联想新品需要一支约 60 秒影视级商业广告，面向创作者与年轻玩家，兼顾产品卖点与线上投放节奏。",process:"脚本与 16 镜头分镜 → AI 生成工作室、天台与影棚场景 → 创作者/玩家角色统一 → 参数字幕与音乐节奏 → 剪辑、调色、成片输出。",stack:"Seedance 2.0 / Kling（镜头生成） · GPT Image（视觉探索） · Premiere Pro（剪辑） · After Effects（字幕包装） · DaVinci Resolve（调色）",prompt:"cinematic laptop commercial, creator under rendering pressure, 240Hz gaming performance, cool blue studio lighting, premium product hero shot, consistent character and product design, 16:9",storyboard:["asset-laptop-studio.webp","asset-laptop-rooftop.webp","asset-laptop-workflow.webp","asset-laptop-people.webp"],s:"创作者、办公多任务用户与玩家同时面对渲染等待、配置难判断、游戏掉帧、设备厚重和续航焦虑。单纯罗列参数无法让观众感知差异。",t:"在约 60 秒内把产品痛点转化为可视化情节，建立从注意力抓取、性能证明、轻薄便携到购买信任的完整说服链。",a:"用 16 镜头四段式结构推进：渲染 99% 建立焦虑；代码、建模、竞速与响应参数完成性能证明；天台和悬浮产品镜头转换到轻薄出行；最后以影棚 Hero Shot 与官方保证收口。",r:"交付完整成片、脚本、16 镜头映射、人物与场景设定及工作流。复杂参数被转译为等待、创作、竞速、出行与购买安心五种观众体验。",tags:["卖点叙事","性能可视化","节奏分层","资产统一"]},
+  light:{number:"02",type:"BEAUTY TVC / 30S",title:"一滴光的双重奏",intro:"以黑色丝绒和琥珀金光建立奢华语法，用液滴、泵头、瓶身纹理与肌肤高光，把“双相精准相遇”拍成一场从产品到肌肤的光泽仪式。",video:"护肤品广告成品/娇韵诗双萃精华广告成品.mp4",brief:"娇韵诗新品需要一支 30 秒高端 TVC，传达双相精华机制与年轻肌肤的光泽感，延续低饱和奢华美学。",process:"品牌视觉锚点 → 黑色丝绒与戏剧侧光测试 → 产品微距与液滴镜头 → 模特使用动作 → Hero Shot、Logo 与 Slogan 收尾。",stack:"GPT Image（视觉提案） · Seedance 2.0（液滴与材质镜头） · Premiere Pro · After Effects · DaVinci Resolve",prompt:"luxury beauty TVC, amber dual serum bottle, black velvet studio, dramatic side light, suspended golden droplets, low saturation, ARRI Alexa look, precise product label",storyboard:["asset-beauty-product.webp","asset-beauty-board.webp"],s:"Double Serum 需要同时传达双相机制、奢华感与肌肤焕亮体验；瓶身、Logo 和金属结构又要求高一致性。",t:"按高端 TVC 规格，在 30 秒、16 镜头内建立可识别的品牌世界，让观众从看见光自然过渡到感受肌肤光泽。",a:"锁定产品、模特与黑色丝绒影棚三大锚点，以金色和琥珀色为唯一高光。镜头从晨雾、丝绒侧光和悬停液滴推进到微距结构、按压、滴落、上脸和 Hero Shot。",r:"形成从品牌策略、产品机制到画面执行的闭环；成片、产品基准图与完整提案板共同构成可验证交付。",tags:["品牌视觉系统","微距产品叙事","材质光线","高端广告节奏","产品一致性"]},
   boiling:{number:"03",type:"FOOD FILM / 30S",title:"03｜浓香麻辣火锅底料广告",intro:"先让锅底沸腾，再让人想起一张餐桌。用牛油融化、红汤翻滚与食材挂汤构成食欲高潮，再以多人围桌完成从“好吃”到“值得一起吃”的情绪升级。",video:"火锅底料广告成品/浓香麻辣火锅底料成品.mp4",brief:"火锅底料品牌需要一支 30 秒食品广告，从清水寡淡切入，快速制造食欲并落到居家聚餐的情感场景。",process:"黑白线稿分镜 → 锅具与底料质感测试 → 沸腾、挂汤、食材慢动作 → 人物品尝与群像 → 产品特写和促销字幕。",stack:"GPT Image（分镜视觉） · Seedance 2.0（食材动态） · Premiere Pro · After Effects · Audition（音效）",prompt:"macro Sichuan hot pot base melting into clear water, rich red broth, beef and tripe, warm home gathering, appetizing food commercial, realistic steam",storyboard:["火锅底料广告成品/分镜图片/01-拆开底料包装.webp","火锅底料广告成品/分镜图片/jimeng-2026-07-10-6743-风格：干净利落的黑白线稿，构图充满强烈的电影感和视觉冲击力，线条精准，用真实素描....webp","火锅底料广告成品/分镜图片/jimeng-2026-07-10-4946-风格：干净利落的黑白线稿，构图充满强烈的电影感和视觉冲击力，线条精准，用真实素描....webp","火锅底料广告成品/分镜图片/jimeng-2026-07-10-5357-风格：干净利落的黑白线稿，构图充满强烈的电影感和视觉冲击力，线条精准，用真实素描....webp","火锅底料广告成品/分镜图片/jimeng-2026-07-10-9084-风格：干净利落的黑白线稿，构图充满强烈的电影感和视觉冲击力，线条精准，用真实素描....webp"],s:"火锅底料的核心价值不是抽象参数，而是“开袋即用、牛油浓香、麻辣入味、在家也有聚餐烟火气”。需要在短时间内同时制造食欲和购买理由。",t:"用 30 秒完成从清水寡淡到一锅沸腾、从单品卖点到家庭社交情绪的转化，并让暖红金字幕与食物画面形成统一识别。",a:"设计 12 个镜头的食欲递进：清水静置制造反差；拆袋特写证明底料紧实油润；下锅、融化、沸腾、挂汤用俯拍、近景与慢动作连续放大香气与质感；肥牛、毛肚、虾滑、藕片等食材展示“一锅百味”；随后切到年轻人品尝、多人围桌，把“味道”转化为“驱散疲惫、日常小聚”。最后用产品特写和简约 Slogan 完成购买收口。五张黑白线稿分镜先锁定锅具、食材、人物和群像构图，再进入成片。",r:"交付一支具有明确“抓眼—沉浸—情感—卖点”结构的食品广告，并保留可追溯的 DOCX 分镜脚本、黑白分镜图和成片。导演结果可直接从镜头链验证：观众先被汤底吸引，再理解“一锅搞定”，最后产生“在家也能吃出锅店味”的购买想象。",tags:["食欲镜头","产品质感","节奏递进","情绪转化","分镜预演"]},
   sixlooks:{number:"04",type:"FASHION SHORT / 9:16",title:"04｜多风格女装一秒变装短视频",intro:"把换装变成节拍，把一周穿搭压缩进 23 秒。统一人物与场景守住连续性，让每一次响指、遮镜和转身都成为风格切换。",video:"女装多风格变装广告成品/多风格女装变装成品.mp4",brief:"为穿搭博主制作一支 9:16 竖屏种草片，在极短时长中展示六种风格化 Look，并适配抖音、小红书与快手。",process:"Look 造型策划 → AI 模特与摄影棚锚定 → 动作卡点设计 → 六套服装生成与一致性修复 → 字幕与平台版本输出。",stack:"GPT Image（人物/造型探索） · Seedance 2.0（变装动作） · Kling（镜头补帧） · CapCut/Premiere Pro（剪辑与节拍）",prompt:"vertical fashion transformation short, same female model, dark neon studio, six distinct outfits, finger snap and spin transitions, editorial lighting, consistent face",storyboard:["女装多风格变装广告成品/分镜图/静帧1.webp","女装多风格变装广告成品/分镜图/静帧2.webp","女装多风格变装广告成品/分镜图/静帧3.webp","女装多风格变装广告成品/分镜图/静帧5.webp","女装多风格变装广告成品/分镜图/静帧6.webp","女装多风格变装广告成品/分镜图/静帧4.webp","女装多风格变装广告成品/分镜图/静帧7.webp"],s:"穿搭内容需要在竖屏平台的极短注意力窗口里，让用户快速看到多种风格，同时保持同一 AI 模特、同一摄影棚和服装轮廓稳定。",t:"制作一支约23秒的个人穿搭种草片，完成“基础款出场—6套Look切换”的平台化内容闭环。",a:"以同一 AI 虚拟女性模特和深色潮流摄影棚为全片锚点；用打响指、甩发、遮镜、转身、戴帽、转圈等可识别动作完成卡点换装。6 套造型依次覆盖甜酷辣妹、温柔韩系、都市通勤、法式复古、休闲运动和约会连衣裙；镜头 2–7 分别采用推拉、闪白、手掌遮镜、跳切、包遮镜、帽遮镜和旋转转场。",r:"形成一支适配抖音/小红书/快手的竖屏成片。",tags:["竖屏结构","AI人物一致性","动作转场","时尚造型","平台适配"]},
   spring:{number:"05",type:"FASHION SPLIT FILM / 14S",title:"05｜春日女装分屏对比展示片",intro:"用同机位、同步动作与左右分屏，让甜酷和温柔从抽象风格变成可比较的版型、面料与动态差异。",video:"同机位户外女装展示成品/同机位户外女装展示.mp4",brief:"为春季女装上新制作一支 14 秒双分屏展示片，让两套造型在同一画面完成版型与面料对比。",process:"两套造型搭配 → 左右分屏构图测试 → 同机位同步表演 → 肩部与面料透光特写 → 品牌字幕与电商版本输出。",stack:"GPT Image（服装平铺与场景探索） · Seedance 2.0（双人同步动作） · Premiere Pro（分屏剪辑） · DaVinci Resolve（自然光调色）",prompt:"spring fashion split-screen film, same Asian female model in two outfits, tree-lined street, synchronized walking, shoulder fabric backlight detail, clean Korean editorial style",storyboard:["同机位户外女装展示成品/服装平铺图/白色长袖露肩上衣+黑色高腰修身短裤+黑色厚底系带马丁靴.jpg","同机位户外女装展示成品/服装平铺图/薄荷绿肌理感宽松开衫+浅蓝垂感长裙+棕色低跟鞋.png"],s:"两套春日女装的差异集中在版型、肩部设计、面料纹理和整体气质，单一全身展示容易让用户错过细节，也难以直接比较。",t:"在约14秒内，用左右双竖屏同步表演，让观众一眼完成两套造型的版型、材质与风格对照。",a:"锁定同一年轻亚洲女性模特、同一春日林荫道和同一黑色菱格链条包；左侧以白色露肩泡泡袖+黑色短裤+马丁靴呈现甜酷，右侧以薄荷绿针织+雾蓝缎面长裙+棕色低跟鞋呈现温柔。5段节奏从双人缓步入场、多角度转身，推进到肩部设计、逆光面料透光特写，最后以同步挥手与品牌字幕收尾。通过同机位、等宽分隔线和同步动作，确保比较关系始终成立。",r:"交付一支结构清晰的双造型展示片，并保留两套服装平铺图与完整剧情脚本。其可验证价值在于：观众无需跳转或记忆，就能在同一画面中完成风格与面料的即时比较。后续可搭建工作流替换不同服装展示即可。",tags:["分屏构图","同机位控制","服装细节","自然光","电商展示"]},
@@ -54,41 +54,41 @@ projects.lucky.brief=projects.lucky.brief
 
 const characterAssets={
   lucky:[
-    {name:"林念念｜重生前 25 岁",src:"AI漫剧成品/人物资产/林念念-重生前25岁-面部特写与全身三视图.png"},
-    {name:"林念念｜流浪时期",src:"AI漫剧成品/人物资产/林念念-流浪时期-面部特写与全身三视图-v3.png"},
-    {name:"林念念｜顾家小千金",src:"AI漫剧成品/人物资产/林念念-顾家小千金-面部特写与全身三视图.png"},
-    {name:"顾砚川｜顾氏集团总裁",src:"AI漫剧成品/人物资产/顾砚川-面部特写与全身三视图.png"},
-    {name:"顾谨言｜顾家财务负责人",src:"AI漫剧成品/人物资产/顾谨言-面部特写与全身三视图.png"},
-    {name:"顾修远｜顾家律师",src:"AI漫剧成品/人物资产/顾修远-面部特写与全身三视图-v4.png"},
-    {name:"顾沉舟｜顾家事务助理",src:"AI漫剧成品/人物资产/顾沉舟-面部特写与全身三视图-v2.png"},
-    {name:"顾明德｜顾家旁支",src:"AI漫剧成品/人物资产/顾明德-面部特写与全身三视图.png"},
-    {name:"顾婉柔｜顾家旁支",src:"AI漫剧成品/人物资产/顾婉柔-面部特写与全身三视图-v2.png"},
-    {name:"周启明｜幕后反派",src:"AI漫剧成品/人物资产/周启明-面部特写与全身三视图.png"}
+    {name:"林念念｜重生前 25 岁",src:"asset-character-09.webp"},
+    {name:"林念念｜流浪时期",src:"asset-character-08.webp"},
+    {name:"林念念｜顾家小千金",src:"asset-character-07.webp"},
+    {name:"顾砚川｜顾氏集团总裁",src:"asset-character-06.webp"},
+    {name:"顾谨言｜顾家财务负责人",src:"asset-character-02.webp"},
+    {name:"顾修远｜顾家律师",src:"asset-character-05.webp"},
+    {name:"顾沉舟｜顾家事务助理",src:"asset-character-01.webp"},
+    {name:"顾明德｜顾家旁支",src:"asset-character-03.webp"},
+    {name:"顾婉柔｜顾家旁支",src:"asset-character-04.webp"},
+    {name:"周启明｜幕后反派",src:"asset-character-10.webp"}
   ]
 };
 
 const sceneAssets={
   lucky:[
-    {name:"01｜公司会议室·夜",src:"AI漫剧成品/场景资产/1公司会议室·夜.webp"},
-    {name:"02｜医院走廊·夜",src:"AI漫剧成品/场景资产/2医院走廊·夜.webp"},
-    {name:"03｜出租屋·深夜",src:"AI漫剧成品/场景资产/3出租屋·深夜.webp"},
-    {name:"04｜顾氏慈善中心门口·暴雨夜",src:"AI漫剧成品/场景资产/4顾氏慈善中心门口·暴雨夜.webp"},
-    {name:"05｜顾氏集团大厦门口·暴雨夜",src:"AI漫剧成品/场景资产/5顾氏集团大厦门口·暴雨夜.webp"},
-    {name:"06｜医院儿童病房",src:"AI漫剧成品/场景资产/6医院儿童病房.webp"},
-    {name:"07｜顾家客厅·次日清晨",src:"AI漫剧成品/场景资产/7顾家客厅·次日清晨.webp"},
-    {name:"08｜顾家会议室·午后",src:"AI漫剧成品/场景资产/8顾家会议室·午后.webp"},
-    {name:"09｜顾家客厅·傍晚",src:"AI漫剧成品/场景资产/9顾家客厅-傍晚.webp"},
-    {name:"10｜周启明办公室·片尾",src:"AI漫剧成品/场景资产/10周启明办公室-片尾.webp"}
+    {name:"01｜公司会议室·夜",src:"AI漫剧成品/场景资产/1公司会议室·夜.png"},
+    {name:"02｜医院走廊·夜",src:"AI漫剧成品/场景资产/2医院走廊·夜.png"},
+    {name:"03｜出租屋·深夜",src:"AI漫剧成品/场景资产/3出租屋·深夜.png"},
+    {name:"04｜顾氏慈善中心门口·暴雨夜",src:"AI漫剧成品/场景资产/4顾氏慈善中心门口·暴雨夜.png"},
+    {name:"05｜顾氏集团大厦门口·暴雨夜",src:"AI漫剧成品/场景资产/5顾氏集团大厦门口·暴雨夜.png"},
+    {name:"06｜医院儿童病房",src:"AI漫剧成品/场景资产/6医院儿童病房.png"},
+    {name:"07｜顾家客厅·次日清晨",src:"AI漫剧成品/场景资产/7顾家客厅·次日清晨.png"},
+    {name:"08｜顾家会议室·午后",src:"AI漫剧成品/场景资产/8顾家会议室·午后.png"},
+    {name:"09｜顾家客厅·傍晚",src:"AI漫剧成品/场景资产/9顾家客厅-傍晚.png"},
+    {name:"10｜周启明办公室·片尾",src:"AI漫剧成品/场景资产/10周启明办公室-片尾.png"}
   ]
 };
 
 const propAssets={
   lucky:[
-    {name:"01｜母亲照片与死亡通知",src:"AI漫剧成品/道具资产/1母亲照片与死亡通知.webp"},
-    {name:"02｜儿童身份牌、旧布包与旧钢笔",src:"AI漫剧成品/道具资产/2儿童身份牌、旧布包与旧钢笔.webp"},
-    {name:"03｜伪造合同与附录页",src:"AI漫剧成品/道具资产/3伪造合同与附录页.webp"},
-    {name:"04｜财务报表与服务器记录",src:"AI漫剧成品/道具资产/4财务报表与服务器记录.webp"},
-    {name:"05｜录音手机与周启明资料",src:"AI漫剧成品/道具资产/5录音手机与周启明资料.webp"}
+    {name:"01｜母亲照片与死亡通知",src:"AI漫剧成品/道具资产/1母亲照片与死亡通知.png"},
+    {name:"02｜儿童身份牌、旧布包与旧钢笔",src:"AI漫剧成品/道具资产/2儿童身份牌、旧布包与旧钢笔.png"},
+    {name:"03｜伪造合同与附录页",src:"AI漫剧成品/道具资产/3伪造合同与附录页.png"},
+    {name:"04｜财务报表与服务器记录",src:"AI漫剧成品/道具资产/4财务报表与服务器记录.png"},
+    {name:"05｜录音手机与周启明资料",src:"AI漫剧成品/道具资产/5录音手机与周启明资料.png"}
   ]
 };
 
@@ -493,4 +493,7 @@ imageLightboxClose?.addEventListener('click',closeImageLightbox);
 imageLightboxImage?.addEventListener('click',closeImageLightbox);
 imageLightbox?.addEventListener('click',e=>{if(e.target===imageLightbox)closeImageLightbox()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeImageLightbox()});
+
+
+
 
