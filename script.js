@@ -239,7 +239,7 @@ function warmVideoFrame(frame){
 const videoWarmObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{
   if(entry.isIntersecting){warmVideoFrame(entry.target);videoWarmObserver.unobserve(entry.target)}
 }),{rootMargin:'1400px 0px'});
-document.querySelectorAll('.lazy-video').forEach(videoWarmObserver.observe);
+document.querySelectorAll('.lazy-video').forEach(frame=>videoWarmObserver.observe(frame));
 function setVideoPerformanceMode(enabled){
   document.body.classList.toggle('video-playing',Boolean(enabled));
 }
