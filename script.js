@@ -15,22 +15,45 @@ projects.sixlooks.video=blobVideoBase+"fashion-transform-web.mp4";
 projects.spring.video=blobVideoBase+"fashion-split-web.mp4";
 projects.lucky.video=blobVideoBase+"drama-mobile.mp4";
 
-// Some files were flattened into the repository root by GitHub's web uploader.
-// Retry failed nested image URLs from the root. The immediate scan also catches
-// images whose error event fired before this bottom-of-page script was loaded.
+// Mobile networks can briefly fail an otherwise valid nested image request.
+// Retry the original URL before considering the legacy root-file fallback;
+// changing to the root immediately made valid storyboard paths fail forever.
+const IMAGE_RETRY_LIMIT=3;
 function retryImageFromRoot(image){
-  if(!(image instanceof HTMLImageElement)||image.dataset.rootFallback)return;
-  const original=image.getAttribute("src")||"";
-  if(!original.includes("/"))return;
-  image.dataset.rootFallback="1";
-  image.src=original.split("/").pop();
+  if(!(image instanceof HTMLImageElement)||image.dataset.retryScheduled)return;
+  const original=image.dataset.originalSrc||image.getAttribute("src")||"";
+  if(!original)return;
+  image.dataset.originalSrc=original;
+  const retryCount=Number(image.dataset.retryCount||0);
+  if(retryCount<IMAGE_RETRY_LIMIT){
+    image.dataset.retryCount=String(retryCount+1);
+    image.dataset.retryScheduled='1';
+    image.classList.remove('media-load-error');
+    const delay=500*Math.pow(2,retryCount);
+    setTimeout(()=>{
+      delete image.dataset.retryScheduled;
+      const separator=original.includes('?')?'&':'?';
+      image.src=`${original}${separator}imgretry=${retryCount+1}-${Date.now()}`;
+    },delay);
+    return;
+  }
+  if(image.dataset.preservePath!=='1'&&original.includes('/')&&!image.dataset.rootFallback){
+    image.dataset.rootFallback='1';
+    image.dataset.retryCount='0';
+    image.dataset.originalSrc=original.split('/').pop();
+    image.src=image.dataset.originalSrc;
+    return;
+  }
+  image.classList.add('media-load-error');
+  image.setAttribute('aria-label',(image.alt||'图片')+'加载失败');
 }
 function addImageErrorState(image){
   if(!(image instanceof HTMLImageElement)||image.dataset.errorStateBound)return;
   image.dataset.errorStateBound='1';
-  image.addEventListener('error',()=>{
-    image.classList.add('media-load-error');
-    image.setAttribute('aria-label',(image.alt||'图片')+'加载失败');
+  image.addEventListener('load',()=>{
+    image.classList.remove('media-load-error');
+    image.removeAttribute('aria-label');
+    image.dataset.retryCount='0';
   });
 }
 document.addEventListener("error",event=>retryImageFromRoot(event.target),true);
@@ -180,15 +203,6 @@ function prepareImage(img,priority='low'){
   if(!img||imageLoadQueue.has(img))return;
   addImageErrorState(img);
   imageLoadQueue.add(img);
-  if(!img.dataset.retryBound){
-    img.dataset.retryBound='1';
-    img.addEventListener('error',()=>{
-      if(img.dataset.retried)return;
-      img.dataset.retried='1';
-      const src=img.currentSrc||img.src;
-      if(src)img.src=src+(src.includes('?')?'&':'?')+'retry=1';
-    },{once:true});
-  }
   imageJobs.push({img,priority});
   drainImageJobs();
 }
@@ -381,7 +395,7 @@ function renderInlineProjects(){
     const heading=card.querySelector('.work-meta h3');
     if(heading)heading.textContent=title;
     const storyboard=p.storyboard.filter(src=>!src.toLowerCase().endsWith('.md'))
-      .map(src=>`<img src="${src}" alt="${title} 分镜过程物料" loading="lazy" />`).join('');
+      .map(src=>`<img src="${src}" alt="${title} 分镜过程物料" loading="lazy" data-preserve-path="1" />`).join('');
     const assetLoading=key==='lucky'?'eager':'lazy';
     const characterCards=(characterAssets[key]||[]).map(asset=>`
       <figure class="character-asset">
@@ -390,12 +404,12 @@ function renderInlineProjects(){
       </figure>`).join('');
     const sceneCards=(sceneAssets[key]||[]).map(asset=>`
       <figure class="scene-asset">
-        <img src="${asset.src}" alt="${asset.name} 场景设定图" loading="${assetLoading}" decoding="async" />
+        <img src="${asset.src}" alt="${asset.name} 场景设定图" loading="${assetLoading}" decoding="async" data-preserve-path="1" />
         <figcaption>${asset.name}</figcaption>
       </figure>`).join('');
     const propCards=(propAssets[key]||[]).map(asset=>`
       <figure class="prop-asset">
-        <img src="${asset.src}" alt="${asset.name} 道具设定图" loading="${assetLoading}" decoding="async" />
+        <img src="${asset.src}" alt="${asset.name} 道具设定图" loading="${assetLoading}" decoding="async" data-preserve-path="1" />
         <figcaption>${asset.name}</figcaption>
       </figure>`).join('');
     const assetSubtitle=characterCards
