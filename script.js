@@ -222,6 +222,10 @@ const videoWarmCache=new WeakMap();
 // Include the food-film card as well: its 110 MB source is the heaviest
 // mobile request and otherwise delays the cards below when first reached.
 const videoWarmProjects=new Set(['boiling','sixlooks','spring','lucky']);
+// Keep background prefetch deliberately small.  Preloading several full
+// streams at once competes with posters and page images, making the whole
+// portfolio feel slower even though individual videos may start sooner.
+const desktopWarmEnabled=false;
 function warmVideoFrame(frame){
   if(!frame||!videoWarmProjects.has(frame.closest('.work-card')?.dataset.project)||videoWarmCache.has(frame))return;
   const source=getProjectVideoSource(frame);
@@ -254,8 +258,11 @@ function promoteWarmVideo(frame){
 }
 const videoWarmObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{
   if(entry.isIntersecting){warmVideoFrame(entry.target);videoWarmObserver.unobserve(entry.target)}
-}),{rootMargin:'1400px 0px'});
-document.querySelectorAll('.lazy-video').forEach(frame=>videoWarmObserver.observe(frame));
+}),{rootMargin:mobilePlayback?'600px 0px':'0px'});
+// On desktop, wait for an explicit pointer/focus signal before warming a
+// stream.  Automatic warming of cards far below the fold competes with the
+// page's image requests and was the reason the overall page became slower.
+if(mobilePlayback)document.querySelectorAll('.lazy-video').forEach(frame=>videoWarmObserver.observe(frame));
 document.querySelectorAll('.lazy-video').forEach(frame=>{
   frame.addEventListener('pointerenter',()=>{warmVideoFrame(frame);promoteWarmVideo(frame)},{passive:true});
   frame.addEventListener('pointerdown',()=>{warmVideoFrame(frame);promoteWarmVideo(frame)},{passive:true});
@@ -265,7 +272,7 @@ document.querySelectorAll('.lazy-video').forEach(frame=>{
 // metadata during idle time so the CDN connection is ready before the user
 // reaches it, without downloading the full 110 MB stream up front.
 const criticalBoilingFrame=document.querySelector('[data-project="boiling"] .lazy-video');
-if(criticalBoilingFrame){
+if(criticalBoilingFrame&&mobilePlayback){
   const warmCritical=()=>warmVideoFrame(criticalBoilingFrame);
   if('requestIdleCallback' in window)requestIdleCallback(warmCritical,{timeout:1200});
   else setTimeout(warmCritical,700);
@@ -275,7 +282,7 @@ if(criticalBoilingFrame){
 // clicks them, leaving those players to start from byte zero.  Staggering the
 // range requests keeps the connection reusable without four simultaneous
 // downloads competing with page images.
-if(!mobilePlayback){
+if(!mobilePlayback&&desktopWarmEnabled){
   const desktopWarmup=()=>{
     const frames=[...document.querySelectorAll('.lazy-video')]
       .filter(frame=>videoWarmProjects.has(frame.closest('.work-card')?.dataset.project));
