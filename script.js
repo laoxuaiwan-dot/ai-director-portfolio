@@ -387,6 +387,10 @@ document.addEventListener('click',event=>{
         await (document.exitFullscreen?.()||document.webkitExitFullscreen?.());
       }else if(player.requestFullscreen){
         await player.requestFullscreen();
+      }else if(player.webkitEnterFullscreen){
+        // iOS Safari exposes native video fullscreen through this API rather
+        // than the standard element requestFullscreen method.
+        player.webkitEnterFullscreen();
       }else if(frame.webkitRequestFullscreen){
         frame.webkitRequestFullscreen();
       }else if(frame.requestFullscreen){
@@ -502,7 +506,12 @@ function renderInlineProjects(){
     }
   });
 }
-renderInlineProjects();
+// Let the first frame paint before expanding all inline case-study details.
+// This keeps the initial homepage responsive on desktop while preserving the
+// same final DOM and all existing image retry behavior.
+const scheduleInlineProjects=()=>renderInlineProjects();
+if('requestIdleCallback' in window)requestIdleCallback(scheduleInlineProjects,{timeout:900});
+else setTimeout(scheduleInlineProjects,120);
 
 function openProject(key){const p=projects[key];if(!p)return;
   const {title:displayTitle,story}=getProjectView(key,p);
