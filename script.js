@@ -70,16 +70,16 @@ projects.lucky.brief=projects.lucky.brief
 
 const characterAssets={
   lucky:[
-    {name:"林念念｜重生前 25 岁",src:"asset-character-09.webp"},
-    {name:"林念念｜流浪时期",src:"asset-character-08.webp"},
-    {name:"林念念｜顾家小千金",src:"asset-character-07.webp"},
-    {name:"顾砚川｜顾氏集团总裁",src:"asset-character-06.webp"},
-    {name:"顾谨言｜顾家财务负责人",src:"asset-character-02.webp"},
-    {name:"顾修远｜顾家律师",src:"asset-character-05.webp"},
-    {name:"顾沉舟｜顾家事务助理",src:"asset-character-01.webp"},
-    {name:"顾明德｜顾家旁支",src:"asset-character-03.webp"},
-    {name:"顾婉柔｜顾家旁支",src:"asset-character-04.webp"},
-    {name:"周启明｜幕后反派",src:"asset-character-10.webp"}
+    {name:"林念念｜重生前 25 岁",src:"AI漫剧成品/人物资产/林念念-重生前25岁-面部特写与全身三视图.webp"},
+    {name:"林念念｜流浪时期",src:"AI漫剧成品/人物资产/林念念-流浪时期-面部特写与全身三视图-v3.webp"},
+    {name:"林念念｜顾家小千金",src:"AI漫剧成品/人物资产/林念念-顾家小千金-面部特写与全身三视图.webp"},
+    {name:"顾砚川｜顾氏集团总裁",src:"AI漫剧成品/人物资产/顾砚川-面部特写与全身三视图.webp"},
+    {name:"顾谨言｜顾家财务负责人",src:"AI漫剧成品/人物资产/顾谨言-面部特写与全身三视图.webp"},
+    {name:"顾修远｜顾家律师",src:"AI漫剧成品/人物资产/顾修远-面部特写与全身三视图-v4.webp"},
+    {name:"顾沉舟｜顾家事务助理",src:"AI漫剧成品/人物资产/顾沉舟-面部特写与全身三视图-v2.webp"},
+    {name:"顾明德｜顾家旁支",src:"AI漫剧成品/人物资产/顾明德-面部特写与全身三视图.webp"},
+    {name:"顾婉柔｜顾家旁支",src:"AI漫剧成品/人物资产/顾婉柔-面部特写与全身三视图-v2.webp"},
+    {name:"周启明｜幕后反派",src:"AI漫剧成品/人物资产/周启明-面部特写与全身三视图.webp"}
   ]
 };
 
