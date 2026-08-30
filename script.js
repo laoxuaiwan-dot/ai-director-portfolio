@@ -267,6 +267,23 @@ if(criticalBoilingFrame){
   if('requestIdleCallback' in window)requestIdleCallback(warmCritical,{timeout:1200});
   else setTimeout(warmCritical,700);
 }
+// On desktop, warm videos 3–6 in a controlled sequence after the first paint.
+// IntersectionObserver alone may not reach the lower cards before the user
+// clicks them, leaving those players to start from byte zero.  Staggering the
+// range requests keeps the connection reusable without four simultaneous
+// downloads competing with page images.
+if(!mobilePlayback){
+  const desktopWarmup=()=>{
+    const frames=[...document.querySelectorAll('.lazy-video')]
+      .filter(frame=>videoWarmProjects.has(frame.closest('.work-card')?.dataset.project));
+    frames.forEach((frame,index)=>setTimeout(()=>{
+      warmVideoFrame(frame);
+      promoteWarmVideo(frame);
+    },index*1200));
+  };
+  if('requestIdleCallback' in window)requestIdleCallback(desktopWarmup,{timeout:2200});
+  else setTimeout(desktopWarmup,1600);
+}
 // A plain share URL should always start at the top, even when the browser
 // restores a previous scroll position from its session history. Explicit
 // section hashes (for example #works) remain respected.
