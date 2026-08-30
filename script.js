@@ -148,13 +148,33 @@ const watermarkObserver=new MutationObserver(records=>records.forEach(record=>re
   if(node.nodeType===1)markMediaWatermarks(node);
 })));
 watermarkObserver.observe(document.body,{childList:true,subtree:true});
+// Load only a few images at a time.  The portfolio contains many large
+// storyboard/asset images; starting them all at once makes mobile and desktop
+// browsers compete with the video CDN and can leave blank cards while scrolling.
 const imageLoadQueue=new WeakSet();
+const imageJobs=[];
+let activeImageJobs=0;
+const MAX_IMAGE_JOBS=3;
+function drainImageJobs(){
+  while(activeImageJobs<MAX_IMAGE_JOBS&&imageJobs.length){
+    const job=imageJobs.shift();
+    activeImageJobs++;
+    const img=job.img;
+    img.decoding='async';
+    img.loading='eager';
+    img.fetchPriority=job.priority;
+    const done=()=>{activeImageJobs--;drainImageJobs()};
+    if(img.complete){
+      Promise.resolve(img.decode?.()).catch(()=>{}).finally(done);
+    }else{
+      img.addEventListener('load',done,{once:true});
+      img.addEventListener('error',done,{once:true});
+    }
+  }
+}
 function prepareImage(img,priority='low'){
   if(!img||imageLoadQueue.has(img))return;
   imageLoadQueue.add(img);
-  img.decoding='async';
-  img.loading='eager';
-  img.fetchPriority=priority;
   if(!img.dataset.retryBound){
     img.dataset.retryBound='1';
     img.addEventListener('error',()=>{
@@ -164,6 +184,8 @@ function prepareImage(img,priority='low'){
       if(src)img.src=src+(src.includes('?')?'&':'?')+'retry=1';
     },{once:true});
   }
+  imageJobs.push({img,priority});
+  drainImageJobs();
 }
 const imagePreloader=new IntersectionObserver(entries=>entries.forEach(entry=>{
   if(entry.isIntersecting){
@@ -233,7 +255,7 @@ document.addEventListener('click',event=>{
   player.controlsList='nodownload noremoteplayback';
   player.disablePictureInPicture=true;
   player.playsInline=true;
-  player.preload='auto';
+  player.preload='metadata';
   player.poster=frame.dataset.poster||'';
   player.src=source;
   player.setAttribute('aria-label',frame.dataset.label||'项目成片');
@@ -245,6 +267,7 @@ document.addEventListener('click',event=>{
   const beginPlayback=()=>{
     if(activeProjectVideo!==player)return;
     clearInterval(activeBufferTimer);
+    player.preload='auto';
     status.classList.remove('is-visible');
     player.controls=true;
     player.play().catch(()=>{});
@@ -270,6 +293,15 @@ document.addEventListener('click',event=>{
   player.addEventListener('pause',()=>setVideoPerformanceMode(false));
   player.addEventListener('ended',()=>setVideoPerformanceMode(false));
   player.addEventListener('error',()=>{
+    // Retry once with a cache-busting URL.  This recovers transient CDN/range
+    // failures without reloading the page, while keeping a clear user message.
+    if(!player.dataset.retried){
+      player.dataset.retried='1';
+      const retrySource=source+(source.includes('?')?'&':'?')+'retry=1';
+      player.src=retrySource;
+      player.load();
+      return;
+    }
     status.textContent='视频加载失败，请刷新后重试';
     status.classList.add('is-visible');
   });
