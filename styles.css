@@ -72,7 +72,7 @@
 .archive-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:70px 2.4vw}
 .archive-item--wide,.archive-item--landscape{grid-column:1/-1}
 .archive-item figure{margin:0;height:min(52vw,650px);overflow:hidden;background:#222525}
-.archive-item figure.archive-scroll-frame{height:min(52vw,650px);overflow-y:auto;overflow-x:hidden;background:#111414;scrollbar-width:thin;scrollbar-color:#56605e #171a1a;overscroll-behavior:contain}
+.archive-item figure.archive-scroll-frame{height:min(52vw,650px);overflow-y:auto;overflow-x:hidden;background:#111414;scrollbar-width:thin;scrollbar-color:#56605e #171a1a;overscroll-behavior:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch}
 .archive-scroll-frame::-webkit-scrollbar{width:9px}.archive-scroll-frame::-webkit-scrollbar-track{background:#171a1a;border-left:1px solid #2a302f}.archive-scroll-frame::-webkit-scrollbar-thumb{background:#56605e;border-radius:8px}.archive-scroll-frame::-webkit-scrollbar-thumb:hover{background:#717c78}
 .archive-scroll-frame img{width:100%;height:auto;min-height:100%;display:block;object-fit:contain;object-position:top center;filter:none}
 .archive-scroll-frame:hover img{transform:none;filter:none}
@@ -281,9 +281,5 @@ body.video-playing *{animation-play-state:paused!important}
 @media(max-width:900px){.noise{display:none}.hero{min-height:100svh}.hero-media{position:absolute!important;inset:0!important}.hero-poster{object-position:58% center}.hero-index{display:none}.hero-content{max-width:100%;padding-right:0}.hero h1{overflow-wrap:anywhere}.hero-actions{position:relative;z-index:3}}
 @media(max-width:900px){.media-watermark--top-left{left:10px;top:9px}}
 
-/* Mobile work cards can be several screens tall after their inline project
-   details are rendered. A percentage-based reveal observer can never reach
-   its threshold for such a tall element, leaving the whole card transparent
-   while it still occupies the page. Keep cards visible on mobile and retain
-   reveal animation for the smaller headings and sections. */
+/* Prevent very tall mobile work cards from remaining transparent forever. */
 @media(max-width:900px){.work-card.reveal{opacity:1!important;transform:none!important}}

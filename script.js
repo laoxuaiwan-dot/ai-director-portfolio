@@ -309,6 +309,10 @@ document.addEventListener('click',event=>{
   fullscreenButton.setAttribute('aria-label','全屏播放');
   fullscreenButton.title='全屏播放';
   player.controls=false;
+  // The play button is a direct user gesture, so restore audible playback
+  // even when this element came from the muted metadata warm-up cache.
+  player.muted=false;
+  player.removeAttribute('muted');
   player.controlsList='nodownload noremoteplayback';
   player.disablePictureInPicture=true;
   player.playsInline=true;
@@ -345,6 +349,9 @@ document.addEventListener('click',event=>{
   player.addEventListener('canplay',beginPlayback,{once:true});
   player.addEventListener('waiting',()=>{
     if(activeProjectVideo!==player)return;
+    // Do not leave a stale overlay on screen once frames are still advancing.
+    // Mobile browsers can emit a transient waiting event during startup.
+    if(!player.paused&&player.readyState>=3)return;
     status.textContent='网络缓冲中…';
     status.classList.add('is-visible');
   });
