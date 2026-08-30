@@ -18,7 +18,7 @@ projects.lucky.video=blobVideoBase+"drama-mobile.mp4";
 // Mobile networks can briefly fail an otherwise valid nested image request.
 // Retry the original URL before considering the legacy root-file fallback;
 // changing to the root immediately made valid storyboard paths fail forever.
-const IMAGE_RETRY_LIMIT=3;
+const IMAGE_RETRY_LIMIT=5;
 function retryImageFromRoot(image){
   if(!(image instanceof HTMLImageElement)||image.dataset.retryScheduled)return;
   const original=image.dataset.originalSrc||image.getAttribute("src")||"";
@@ -35,13 +35,6 @@ function retryImageFromRoot(image){
       const separator=original.includes('?')?'&':'?';
       image.src=`${original}${separator}imgretry=${retryCount+1}-${Date.now()}`;
     },delay);
-    return;
-  }
-  if(image.dataset.preservePath!=='1'&&original.includes('/')&&!image.dataset.rootFallback){
-    image.dataset.rootFallback='1';
-    image.dataset.retryCount='0';
-    image.dataset.originalSrc=original.split('/').pop();
-    image.src=image.dataset.originalSrc;
     return;
   }
   image.classList.add('media-load-error');
@@ -181,7 +174,7 @@ watermarkObserver.observe(document.body,{childList:true,subtree:true});
 const imageLoadQueue=new WeakSet();
 const imageJobs=[];
 let activeImageJobs=0;
-const MAX_IMAGE_JOBS=3;
+const MAX_IMAGE_JOBS=mobilePlayback?4:6;
 function drainImageJobs(){
   while(activeImageJobs<MAX_IMAGE_JOBS&&imageJobs.length){
     const job=imageJobs.shift();
@@ -199,7 +192,7 @@ function drainImageJobs(){
     }
   }
 }
-function prepareImage(img,priority='low'){
+function prepareImage(img,priority='auto'){
   if(!img||imageLoadQueue.has(img))return;
   addImageErrorState(img);
   imageLoadQueue.add(img);
@@ -208,10 +201,10 @@ function prepareImage(img,priority='low'){
 }
 const imagePreloader=new IntersectionObserver(entries=>entries.forEach(entry=>{
   if(entry.isIntersecting){
-    prepareImage(entry.target);
+    prepareImage(entry.target,'auto');
     imagePreloader.unobserve(entry.target);
   }
-}),{rootMargin:'1200px 0px'});
+}),{rootMargin:'1800px 0px'});
 document.querySelectorAll('img').forEach(img=>{
   if(img.classList.contains('hero-poster'))prepareImage(img,'high');
   else imagePreloader.observe(img);
@@ -277,7 +270,10 @@ document.addEventListener('click',event=>{
   player.controlsList='nodownload noremoteplayback';
   player.disablePictureInPicture=true;
   player.playsInline=true;
-  player.preload='metadata';
+  // Start fetching the playable stream immediately.  Waiting for a full
+  // buffer before playback made desktop connections feel unnecessarily slow.
+  player.preload='auto';
+  player.setAttribute('fetchpriority','high');
   player.poster=frame.dataset.poster||'';
   player.src=source;
   player.setAttribute('aria-label',frame.dataset.label||'项目成片');
@@ -289,7 +285,6 @@ document.addEventListener('click',event=>{
   const beginPlayback=()=>{
     if(activeProjectVideo!==player)return;
     clearInterval(activeBufferTimer);
-    player.preload='auto';
     status.classList.remove('is-visible');
     player.controls=true;
     player.play().catch(()=>{});
@@ -297,11 +292,12 @@ document.addEventListener('click',event=>{
   activeBufferTimer=setInterval(()=>{
     if(activeProjectVideo!==player){clearInterval(activeBufferTimer);return;}
     waited+=250;
-    const target=mobilePlayback?.75:(Number.isFinite(player.duration)&&player.duration<30?3:5);
-    const ready=mobilePlayback?player.readyState>=3:player.readyState===4;
+    const target=mobilePlayback?.75:(Number.isFinite(player.duration)&&player.duration<30?1.5:2);
+    const ready=player.readyState>=3;
     if(getBufferedAhead(player)>=target||ready||waited>=(mobilePlayback?3500:12000))beginPlayback();
   },250);
-  player.addEventListener('canplay',()=>{if(mobilePlayback)beginPlayback()},{once:true});
+  player.addEventListener('loadeddata',beginPlayback,{once:true});
+  player.addEventListener('canplay',beginPlayback,{once:true});
   player.addEventListener('waiting',()=>{
     if(activeProjectVideo!==player)return;
     status.textContent='网络缓冲中…';
