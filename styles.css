@@ -280,3 +280,10 @@ body.video-playing *{animation-play-state:paused!important}
 @media(max-width:900px){.lazy-video-fullscreen{opacity:1;right:10px;top:10px;width:36px;height:36px;font-size:19px}.media-watermark{right:10px;bottom:9px;font-size:14px}}
 @media(max-width:900px){.noise{display:none}.hero{min-height:100svh}.hero-media{position:absolute!important;inset:0!important}.hero-poster{object-position:58% center}.hero-index{display:none}.hero-content{max-width:100%;padding-right:0}.hero h1{overflow-wrap:anywhere}.hero-actions{position:relative;z-index:3}}
 @media(max-width:900px){.media-watermark--top-left{left:10px;top:9px}}
+
+/* Mobile work cards can be several screens tall after their inline project
+   details are rendered. A percentage-based reveal observer can never reach
+   its threshold for such a tall element, leaving the whole card transparent
+   while it still occupies the page. Keep cards visible on mobile and retain
+   reveal animation for the smaller headings and sections. */
+@media(max-width:900px){.work-card.reveal{opacity:1!important;transform:none!important}}
