@@ -222,10 +222,11 @@ const videoWarmCache=new WeakMap();
 // Include the food-film card as well: its 110 MB source is the heaviest
 // mobile request and otherwise delays the cards below when first reached.
 const videoWarmProjects=new Set(['boiling','sixlooks','spring','lucky']);
-// Keep background prefetch deliberately small.  Preloading several full
-// streams at once competes with posters and page images, making the whole
-// portfolio feel slower even though individual videos may start sooner.
-const desktopWarmEnabled=false;
+// Keep background prefetch deliberately small.  One stream at a time gives
+// the browser a useful rolling cache without competing with page images.
+const desktopWarmEnabled=true;
+let desktopWarmQueue=[];
+let desktopWarmRunning=false;
 function warmVideoFrame(frame){
   if(!frame||!videoWarmProjects.has(frame.closest('.work-card')?.dataset.project)||videoWarmCache.has(frame))return;
   const source=getProjectVideoSource(frame);
@@ -255,6 +256,23 @@ function promoteWarmVideo(frame){
   // reset the request and throw away the bytes already received.  The browser
   // continues its own range fetch after preload is promoted to auto.
   if(warm.readyState===0)warm.load();
+}
+function queueDesktopWarm(frame){
+  if(mobilePlayback||!desktopWarmEnabled||!frame||desktopWarmQueue.includes(frame))return;
+  desktopWarmQueue.push(frame);
+  if(desktopWarmRunning)return;
+  desktopWarmRunning=true;
+  const run=()=>{
+    const next=desktopWarmQueue.shift();
+    if(!next){desktopWarmRunning=false;return;}
+    warmVideoFrame(next);
+    promoteWarmVideo(next);
+    const warm=videoWarmCache.get(next);
+    const done=()=>{warm?.removeEventListener('progress',done);setTimeout(run,500)};
+    warm?.addEventListener('progress',done,{once:true});
+    setTimeout(run,4500);
+  };
+  run();
 }
 const videoWarmObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{
   if(entry.isIntersecting){warmVideoFrame(entry.target);videoWarmObserver.unobserve(entry.target)}
@@ -286,10 +304,7 @@ if(!mobilePlayback&&desktopWarmEnabled){
   const desktopWarmup=()=>{
     const frames=[...document.querySelectorAll('.lazy-video')]
       .filter(frame=>videoWarmProjects.has(frame.closest('.work-card')?.dataset.project));
-    frames.forEach((frame,index)=>setTimeout(()=>{
-      warmVideoFrame(frame);
-      promoteWarmVideo(frame);
-    },index*1200));
+    frames.forEach(frame=>queueDesktopWarm(frame));
   };
   if('requestIdleCallback' in window)requestIdleCallback(desktopWarmup,{timeout:2200});
   else setTimeout(desktopWarmup,1600);
