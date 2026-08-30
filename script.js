@@ -437,7 +437,7 @@ function renderInlineProjects(){
     if(heading)heading.textContent=title;
     const storyboard=p.storyboard.filter(src=>!src.toLowerCase().endsWith('.md'))
       .map(src=>`<img src="${src}" alt="${title} 分镜过程物料" loading="lazy" data-preserve-path="1" />`).join('');
-    const assetLoading=key==='lucky'?'eager':'lazy';
+    const assetLoading=key==='lucky'&&!mobilePlayback?'eager':'lazy';
     const characterCards=(characterAssets[key]||[]).map(asset=>`
       <figure class="character-asset">
         <img src="${asset.src}" alt="${asset.name} 人物设定图" loading="${assetLoading}" decoding="async" />
@@ -473,14 +473,16 @@ function renderInlineProjects(){
       <section class="inline-section"><small>04 / TOOL STACK</small><h4>工具栈</h4><p>${p.stack}</p></section>
       <section class="inline-section inline-storyboard-section"><small>05 / STORYBOARD</small><h4>分镜过程物料</h4><div class="storyboard-content">${assetSubtitle}<div class="inline-storyboard">${storyboard}</div></div></section>`;
     card.appendChild(details);
-    details.querySelectorAll('img').forEach(img=>{
-      if(key==='lucky'){
+    details.querySelectorAll('img').forEach((img,index)=>{
+      if(key==='lucky'&&(!mobilePlayback||index<4)){
         img.fetchPriority='low';
         prepareImage(img,'low');
       }else imagePreloader.observe(img);
     });
     if(key==='lucky'){
-      const warmLuckyAssets=()=>details.querySelectorAll('img').forEach(img=>prepareImage(img,'low'));
+      const warmLuckyAssets=()=>details.querySelectorAll('img').forEach((img,index)=>{
+        if(!mobilePlayback||index<4)prepareImage(img,'low');
+      });
       if('requestIdleCallback' in window)requestIdleCallback(warmLuckyAssets,{timeout:1800});
       else setTimeout(warmLuckyAssets,900);
     }
