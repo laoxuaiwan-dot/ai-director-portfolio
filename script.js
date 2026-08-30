@@ -247,7 +247,10 @@ function promoteWarmVideo(frame){
   // films during the initial page load.
   warm.preload='auto';
   warm.setAttribute('fetchpriority','high');
-  warm.load();
+  // Avoid calling load() when metadata is already present because that would
+  // reset the request and throw away the bytes already received.  The browser
+  // continues its own range fetch after preload is promoted to auto.
+  if(warm.readyState===0)warm.load();
 }
 const videoWarmObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{
   if(entry.isIntersecting){warmVideoFrame(entry.target);videoWarmObserver.unobserve(entry.target)}
@@ -433,7 +436,7 @@ document.addEventListener('click',event=>{
       if(activeProjectVideo!==player||generation!==seekGeneration)return;
       const resume=wasPlayingBeforeSeek;
       wasPlayingBeforeSeek=false;
-      if(player.readyState>=3){
+      if(player.readyState>=3||getBufferedAhead(player)>=0.35){
         status.classList.remove('is-visible');
         if(resume)player.play().catch(()=>{});
       }else if(resume){
@@ -443,8 +446,19 @@ document.addEventListener('click',event=>{
           player.play().catch(()=>{});
         };
         player.addEventListener('canplay',resumeWhenReady,{once:true});
+        // Some Blob/CDN responses expose only HAVE_CURRENT_DATA after a
+        // seek.  Do not leave the player paused forever waiting for canplay;
+        // resume as soon as a decoded frame is available, with a short
+        // safety timeout that keeps the existing overlay/status behavior.
+        setTimeout(()=>{
+          if(activeProjectVideo!==player||generation!==seekGeneration)return;
+          if(player.readyState>=2){
+            status.classList.remove('is-visible');
+            player.play().catch(()=>{});
+          }
+        },900);
       }
-    },180);
+    },80);
   });
   player.addEventListener('playing',()=>{
     restoreScroll();
