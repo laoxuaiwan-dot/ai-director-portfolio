@@ -411,18 +411,40 @@ document.addEventListener('click',event=>{
     status.classList.add('is-visible');
   });
   let wasPlayingBeforeSeek=false;
+  let seekResumeTimer=0;
+  let seekGeneration=0;
   player.addEventListener('seeking',()=>{
     if(activeProjectVideo!==player)return;
-    wasPlayingBeforeSeek=!player.paused;
+    seekGeneration+=1;
+    wasPlayingBeforeSeek=wasPlayingBeforeSeek||!player.paused;
+    // Native desktop controls can emit a burst of seeking events while the
+    // thumb is dragged. Pause once and let the final target settle instead of
+    // restarting playback for every intermediate request.
+    if(wasPlayingBeforeSeek&&!player.paused)player.pause();
+    clearTimeout(seekResumeTimer);
     status.textContent='正在加载跳转位置…';
     status.classList.add('is-visible');
   });
   player.addEventListener('seeked',()=>{
     if(activeProjectVideo!==player)return;
-    if(player.readyState>=2){
-      status.classList.remove('is-visible');
-      if(wasPlayingBeforeSeek)player.play().catch(()=>{});
-    }
+    const generation=seekGeneration;
+    clearTimeout(seekResumeTimer);
+    seekResumeTimer=setTimeout(()=>{
+      if(activeProjectVideo!==player||generation!==seekGeneration)return;
+      const resume=wasPlayingBeforeSeek;
+      wasPlayingBeforeSeek=false;
+      if(player.readyState>=3){
+        status.classList.remove('is-visible');
+        if(resume)player.play().catch(()=>{});
+      }else if(resume){
+        const resumeWhenReady=()=>{
+          if(activeProjectVideo!==player||generation!==seekGeneration)return;
+          status.classList.remove('is-visible');
+          player.play().catch(()=>{});
+        };
+        player.addEventListener('canplay',resumeWhenReady,{once:true});
+      }
+    },180);
   });
   player.addEventListener('playing',()=>{
     restoreScroll();
