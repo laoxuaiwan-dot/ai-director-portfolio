@@ -238,10 +238,25 @@ function warmVideoFrame(frame){
   videoWarmCache.set(frame,warm);
   warm.load();
 }
+function promoteWarmVideo(frame){
+  if(mobilePlayback)return;
+  const warm=videoWarmCache.get(frame);
+  if(!warm||warm.preload==='auto')return;
+  // A desktop pointer/focus is a strong intent signal. Promote only that
+  // project to an eager range request instead of downloading all four large
+  // films during the initial page load.
+  warm.preload='auto';
+  warm.setAttribute('fetchpriority','high');
+  warm.load();
+}
 const videoWarmObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{
   if(entry.isIntersecting){warmVideoFrame(entry.target);videoWarmObserver.unobserve(entry.target)}
 }),{rootMargin:'1400px 0px'});
 document.querySelectorAll('.lazy-video').forEach(frame=>videoWarmObserver.observe(frame));
+document.querySelectorAll('.lazy-video').forEach(frame=>{
+  frame.addEventListener('pointerenter',()=>{warmVideoFrame(frame);promoteWarmVideo(frame)},{passive:true});
+  frame.addEventListener('focusin',()=>{warmVideoFrame(frame);promoteWarmVideo(frame)},{passive:true});
+});
 // Video 3 is the first large media card on the mobile scroll path. Warm its
 // metadata during idle time so the CDN connection is ready before the user
 // reaches it, without downloading the full 110 MB stream up front.
@@ -303,7 +318,12 @@ document.addEventListener('click',event=>{
   const preservedScrollY=window.scrollY;
   const restoreScroll=()=>{if(!(document.fullscreenElement||document.webkitFullscreenElement)&&Math.abs(window.scrollY-preservedScrollY)>2)window.scrollTo({top:preservedScrollY,left:0,behavior:'instant'});};
   releaseProjectVideo();
-  const player=videoWarmCache.get(frame)||document.createElement('video');
+  const cachedPlayer=videoWarmCache.get(frame);
+  const player=cachedPlayer||document.createElement('video');
+  // Keep the metadata/buffer already fetched by the warm-up player. Calling
+  // load() unconditionally here discards that work and makes videos 3–6 feel
+  // slow even on a fast desktop connection.
+  const hasWarmMedia=Boolean(cachedPlayer&&cachedPlayer.readyState>0&&cachedPlayer.currentSrc===source);
   const status=document.createElement('div');
   const fullscreenButton=document.createElement('button');
   status.className='lazy-video-status is-visible';
@@ -334,7 +354,7 @@ document.addEventListener('click',event=>{
   frame.replaceChildren(player,status,fullscreenButton);
   markMediaWatermarks(frame);
   activeProjectVideo=player;
-  player.load();
+  if(!hasWarmMedia)player.load();
   let waited=0;
   const beginPlayback=()=>{
     if(activeProjectVideo!==player)return;
