@@ -215,6 +215,31 @@ function getProjectVideoSource(frame){
   if(frame?.dataset.project==='lucky')return blobVideoBase+'drama-mobile.mp4';
   return mobilePlayback&&frame.dataset.videoMobile?frame.dataset.videoMobile:frame.dataset.video;
 }
+// Warm the three heavier portfolio videos before the user clicks them. The
+// warmed element keeps the CDN connection and metadata request alive, so the
+// visible player can reuse it instead of starting from zero.
+const videoWarmCache=new WeakMap();
+const videoWarmProjects=new Set(['sixlooks','spring','lucky']);
+function warmVideoFrame(frame){
+  if(!frame||!videoWarmProjects.has(frame.closest('.work-card')?.dataset.project)||videoWarmCache.has(frame))return;
+  const source=getProjectVideoSource(frame);
+  if(!source)return;
+  const warm=document.createElement('video');
+  warm.className='video-warm-cache';
+  warm.preload='metadata';
+  warm.muted=true;
+  warm.playsInline=true;
+  warm.setAttribute('aria-hidden','true');
+  warm.style.cssText='position:fixed;left:-2px;top:-2px;width:1px;height:1px;opacity:0;pointer-events:none';
+  warm.src=source;
+  document.body.appendChild(warm);
+  videoWarmCache.set(frame,warm);
+  warm.load();
+}
+const videoWarmObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{
+  if(entry.isIntersecting){warmVideoFrame(entry.target);videoWarmObserver.unobserve(entry.target)}
+}),{rootMargin:'1400px 0px'});
+document.querySelectorAll('.lazy-video').forEach(videoWarmObserver.observe);
 function setVideoPerformanceMode(enabled){
   document.body.classList.toggle('video-playing',Boolean(enabled));
 }
@@ -256,7 +281,7 @@ document.addEventListener('click',event=>{
   const source=getProjectVideoSource(frame);
   if(!source)return;
   releaseProjectVideo();
-  const player=document.createElement('video');
+  const player=videoWarmCache.get(frame)||document.createElement('video');
   const status=document.createElement('div');
   const fullscreenButton=document.createElement('button');
   status.className='lazy-video-status is-visible';
@@ -275,7 +300,10 @@ document.addEventListener('click',event=>{
   player.preload='auto';
   player.setAttribute('fetchpriority','high');
   player.poster=frame.dataset.poster||'';
-  player.src=source;
+  if(player.currentSrc!==source&&player.src!==source)player.src=source;
+  player.classList.remove('video-warm-cache');
+  player.removeAttribute('aria-hidden');
+  player.style.cssText='';
   player.setAttribute('aria-label',frame.dataset.label||'项目成片');
   frame.replaceChildren(player,status,fullscreenButton);
   markMediaWatermarks(frame);
