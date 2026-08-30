@@ -382,19 +382,20 @@ function renderInlineProjects(){
     if(heading)heading.textContent=title;
     const storyboard=p.storyboard.filter(src=>!src.toLowerCase().endsWith('.md'))
       .map(src=>`<img src="${src}" alt="${title} 分镜过程物料" loading="lazy" />`).join('');
+    const assetLoading=key==='lucky'?'eager':'lazy';
     const characterCards=(characterAssets[key]||[]).map(asset=>`
       <figure class="character-asset">
-        <img src="${asset.src}" alt="${asset.name} 人物设定图" loading="lazy" />
+        <img src="${asset.src}" alt="${asset.name} 人物设定图" loading="${assetLoading}" decoding="async" />
         <figcaption>${asset.name}</figcaption>
       </figure>`).join('');
     const sceneCards=(sceneAssets[key]||[]).map(asset=>`
       <figure class="scene-asset">
-        <img src="${asset.src}" alt="${asset.name} 场景设定图" loading="lazy" />
+        <img src="${asset.src}" alt="${asset.name} 场景设定图" loading="${assetLoading}" decoding="async" />
         <figcaption>${asset.name}</figcaption>
       </figure>`).join('');
     const propCards=(propAssets[key]||[]).map(asset=>`
       <figure class="prop-asset">
-        <img src="${asset.src}" alt="${asset.name} 道具设定图" loading="lazy" />
+        <img src="${asset.src}" alt="${asset.name} 道具设定图" loading="${assetLoading}" decoding="async" />
         <figcaption>${asset.name}</figcaption>
       </figure>`).join('');
     const assetSubtitle=characterCards
@@ -417,7 +418,20 @@ function renderInlineProjects(){
       <section class="inline-section"><small>04 / TOOL STACK</small><h4>工具栈</h4><p>${p.stack}</p></section>
       <section class="inline-section inline-storyboard-section"><small>05 / STORYBOARD</small><h4>分镜过程物料</h4><div class="storyboard-content">${assetSubtitle}<div class="inline-storyboard">${storyboard}</div></div></section>`;
     card.appendChild(details);
-    details.querySelectorAll('img').forEach(img=>imagePreloader.observe(img));
+    details.querySelectorAll('img').forEach(img=>{
+      if(key==='lucky'){
+        // The drama asset set is part of the project itself.  On mobile,
+        // native lazy loading can leave the lower cards blank after a fast
+        // scroll, so queue them immediately once the project is rendered.
+        img.fetchPriority='low';
+        prepareImage(img,'low');
+      }else imagePreloader.observe(img);
+    });
+    if(key==='lucky'){
+      const warmLuckyAssets=()=>details.querySelectorAll('img').forEach(img=>prepareImage(img,'low'));
+      if('requestIdleCallback' in window)requestIdleCallback(warmLuckyAssets,{timeout:1800});
+      else setTimeout(warmLuckyAssets,900);
+    }
   });
 }
 renderInlineProjects();
