@@ -393,8 +393,11 @@ document.addEventListener('click',event=>{
   activeBufferTimer=setInterval(()=>{
     if(activeProjectVideo!==player){clearInterval(activeBufferTimer);return;}
     waited+=250;
-    const target=mobilePlayback?.75:(Number.isFinite(player.duration)&&player.duration<30?1.5:2);
-    const ready=player.readyState>=3;
+    const target=mobilePlayback?.5:(Number.isFinite(player.duration)&&player.duration<30?.75:1.25);
+    // HAVE_CURRENT_DATA is enough to begin playback; waiting for HAVE_FUTURE_DATA
+    // made large desktop files sit behind the overlay even after a decodable
+    // frame was available, and delayed the browser's own adaptive buffering.
+    const ready=player.readyState>=2;
     if(getBufferedAhead(player)>=target||ready||waited>=(mobilePlayback?3500:12000))beginPlayback();
   },250);
   player.addEventListener('loadeddata',beginPlayback,{once:true});
@@ -406,6 +409,20 @@ document.addEventListener('click',event=>{
     if(!player.paused&&player.readyState>=3)return;
     status.textContent='网络缓冲中…';
     status.classList.add('is-visible');
+  });
+  let wasPlayingBeforeSeek=false;
+  player.addEventListener('seeking',()=>{
+    if(activeProjectVideo!==player)return;
+    wasPlayingBeforeSeek=!player.paused;
+    status.textContent='正在加载跳转位置…';
+    status.classList.add('is-visible');
+  });
+  player.addEventListener('seeked',()=>{
+    if(activeProjectVideo!==player)return;
+    if(player.readyState>=2){
+      status.classList.remove('is-visible');
+      if(wasPlayingBeforeSeek)player.play().catch(()=>{});
+    }
   });
   player.addEventListener('playing',()=>{
     restoreScroll();
