@@ -25,8 +25,17 @@ function retryImageFromRoot(image){
   image.dataset.rootFallback="1";
   image.src=original.split("/").pop();
 }
+function addImageErrorState(image){
+  if(!(image instanceof HTMLImageElement)||image.dataset.errorStateBound)return;
+  image.dataset.errorStateBound='1';
+  image.addEventListener('error',()=>{
+    image.classList.add('media-load-error');
+    image.setAttribute('aria-label',(image.alt||'图片')+'加载失败');
+  });
+}
 document.addEventListener("error",event=>retryImageFromRoot(event.target),true);
 document.querySelectorAll("img").forEach(image=>{
+  addImageErrorState(image);
   if(image.complete&&!image.naturalWidth)retryImageFromRoot(image);
 });
 projects.velocity.stack="GPT Image（视觉探索） · Seedance 2.0 / Kling（镜头生成） · 剪映、Premiere（剪辑、后期）";
@@ -94,11 +103,6 @@ let activeProjectVideo=null;
 let activeBufferTimer=null;
 const mobilePlayback=matchMedia('(max-width: 900px)').matches||navigator.connection?.saveData===true;
 if('scrollRestoration' in history)history.scrollRestoration='manual';
-function showHomepageOnRootUrl(){
-  if(!location.hash)scrollTo(0,0);
-}
-showHomepageOnRootUrl();
-addEventListener('pageshow',showHomepageOnRootUrl);
 function markMediaWatermarks(root=document){
   root.querySelectorAll?.('video').forEach(media=>{
     const parent=media.parentElement;
@@ -174,6 +178,7 @@ function drainImageJobs(){
 }
 function prepareImage(img,priority='low'){
   if(!img||imageLoadQueue.has(img))return;
+  addImageErrorState(img);
   imageLoadQueue.add(img);
   if(!img.dataset.retryBound){
     img.dataset.retryBound='1';
@@ -198,6 +203,9 @@ document.querySelectorAll('img').forEach(img=>{
   else imagePreloader.observe(img);
 });
 function getProjectVideoSource(frame){
+  // The drama has one verified, range-enabled Blob rendition.  Keep the same
+  // source on every device so mobile never points at a missing/partial variant.
+  if(frame?.dataset.project==='lucky')return blobVideoBase+'drama-mobile.mp4';
   return mobilePlayback&&frame.dataset.videoMobile?frame.dataset.videoMobile:frame.dataset.video;
 }
 function setVideoPerformanceMode(enabled){
@@ -321,8 +329,9 @@ document.addEventListener('click',event=>{
 });
 document.addEventListener('fullscreenchange',syncFullscreenVideoMode);
 document.addEventListener('webkitfullscreenchange',syncFullscreenVideoMode);
-document.addEventListener('visibilitychange',()=>{if(document.hidden)releaseProjectVideo()});
-addEventListener('pagehide',releaseProjectVideo);
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&!(document.fullscreenElement||document.webkitFullscreenElement))releaseProjectVideo()});
+// Do not tear down the player on pagehide: mobile browsers may emit pagehide
+// during viewport/URL restoration and that used to recreate the page at top.
 
 addEventListener('scroll',()=>header.classList.toggle('scrolled',scrollY>30),{passive:true});
 menuToggle.addEventListener('click',()=>{const open=!mobileMenu.classList.contains('open');mobileMenu.classList.toggle('open',open);mobileMenu.setAttribute('aria-hidden',String(!open));menuToggle.setAttribute('aria-expanded',String(open));});

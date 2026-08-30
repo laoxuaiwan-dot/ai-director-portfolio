@@ -249,6 +249,8 @@
 .lazy-video>video{width:100%;height:100%;object-fit:contain;background:#000;filter:none!important;mix-blend-mode:normal!important;transform:none!important}
 .lazy-video-status{position:absolute;left:50%;bottom:24px;transform:translate(-50%,10px);padding:12px 17px;border-radius:999px;background:rgba(5,7,7,.88);color:#fff;font-size:10px;letter-spacing:.1em;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:5}
 .lazy-video-status.is-visible{opacity:1;transform:translate(-50%,0)}
+.media-load-error{background:linear-gradient(135deg,#111,#222);object-fit:contain!important}
+.media-load-error::after{content:'素材加载失败，请刷新重试';}
 .work-card:hover .lazy-video>img{filter:none!important;transform:none!important}
 @media(max-width:560px){.lazy-video-play,.lazy-video-status{bottom:14px;padding:12px 15px;font-size:9px}}
 
