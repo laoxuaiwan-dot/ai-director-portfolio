@@ -3,6 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+  <script>
+    // Guard video controls while the page script is still booting.  A very early
+    // click must not be interpreted by the browser as navigation/reload while
+    // delegated playback handlers are being registered.
+    window.__portfolioReady = false;
+    document.addEventListener('click', function (event) {
+      var button = event.target && event.target.closest && event.target.closest('.lazy-video-play');
+      if (button && !window.__portfolioReady) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    }, true);
+  </script>
   <style>html,body{background:#0b0d0d;color:#f3f3ef}</style>
   <meta name="description" content="AI导演个人作品集：品牌广告、时尚影像与AI漫剧。" />
   <title>AI DIRECTOR — 让生成，成为导演语言</title>
@@ -285,7 +298,7 @@
     </figure>
   </div>
 
-  <script src="script.js?v=image-retry-video-18"></script>
+  <script src="script.js?v=image-retry-video-19"></script>
 </body>
 </html>
 

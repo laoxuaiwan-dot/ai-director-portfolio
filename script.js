@@ -15,6 +15,9 @@ projects.sixlooks.video=blobVideoBase+"fashion-transform-web.mp4";
 projects.spring.video=blobVideoBase+"fashion-split-web.mp4";
 projects.lucky.video=blobVideoBase+"drama-mobile.mp4";
 
+// Mobile networks can briefly fail an otherwise valid nested image request.
+// Retry the original URL before considering the legacy root-file fallback;
+// changing to the root immediately made valid storyboard paths fail forever.
 const IMAGE_RETRY_LIMIT=5;
 function retryImageFromRoot(image){
   if(!(image instanceof HTMLImageElement)||image.dataset.retryScheduled)return;
@@ -403,6 +406,9 @@ document.addEventListener('click',event=>{
 document.addEventListener('fullscreenchange',syncFullscreenVideoMode);
 document.addEventListener('webkitfullscreenchange',syncFullscreenVideoMode);
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&!(document.fullscreenElement||document.webkitFullscreenElement))releaseProjectVideo()});
+// The early head guard can now release video controls: delegated playback,
+// fullscreen and scroll-preservation handlers are fully registered above.
+window.__portfolioReady = true;
 // Do not tear down the player on pagehide: mobile browsers may emit pagehide
 // during viewport/URL restoration and that used to recreate the page at top.
 
