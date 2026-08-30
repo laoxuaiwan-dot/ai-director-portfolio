@@ -15,9 +15,6 @@ projects.sixlooks.video=blobVideoBase+"fashion-transform-web.mp4";
 projects.spring.video=blobVideoBase+"fashion-split-web.mp4";
 projects.lucky.video=blobVideoBase+"drama-mobile.mp4";
 
-// Mobile networks can briefly fail an otherwise valid nested image request.
-// Retry the original URL before considering the legacy root-file fallback;
-// changing to the root immediately made valid storyboard paths fail forever.
 const IMAGE_RETRY_LIMIT=5;
 function retryImageFromRoot(image){
   if(!(image instanceof HTMLImageElement)||image.dataset.retryScheduled)return;
@@ -219,7 +216,9 @@ function getProjectVideoSource(frame){
 // warmed element keeps the CDN connection and metadata request alive, so the
 // visible player can reuse it instead of starting from zero.
 const videoWarmCache=new WeakMap();
-const videoWarmProjects=new Set(['sixlooks','spring','lucky']);
+// Include the food-film card as well: its 110 MB source is the heaviest
+// mobile request and otherwise delays the cards below when first reached.
+const videoWarmProjects=new Set(['boiling','sixlooks','spring','lucky']);
 function warmVideoFrame(frame){
   if(!frame||!videoWarmProjects.has(frame.closest('.work-card')?.dataset.project)||videoWarmCache.has(frame))return;
   const source=getProjectVideoSource(frame);
@@ -240,6 +239,15 @@ const videoWarmObserver=new IntersectionObserver(entries=>entries.forEach(entry=
   if(entry.isIntersecting){warmVideoFrame(entry.target);videoWarmObserver.unobserve(entry.target)}
 }),{rootMargin:'1400px 0px'});
 document.querySelectorAll('.lazy-video').forEach(frame=>videoWarmObserver.observe(frame));
+// A plain share URL should always start at the top, even when the browser
+// restores a previous scroll position from its session history. Explicit
+// section hashes (for example #works) remain respected.
+if(!location.hash){
+  const resetToTop=()=>window.scrollTo(0,0);
+  resetToTop();
+  addEventListener('pageshow',resetToTop,{once:true});
+  setTimeout(resetToTop,80);
+}
 function setVideoPerformanceMode(enabled){
   document.body.classList.toggle('video-playing',Boolean(enabled));
 }
@@ -458,9 +466,6 @@ function renderInlineProjects(){
     card.appendChild(details);
     details.querySelectorAll('img').forEach(img=>{
       if(key==='lucky'){
-        // The drama asset set is part of the project itself.  On mobile,
-        // native lazy loading can leave the lower cards blank after a fast
-        // scroll, so queue them immediately once the project is rendered.
         img.fetchPriority='low';
         prepareImage(img,'low');
       }else imagePreloader.observe(img);
