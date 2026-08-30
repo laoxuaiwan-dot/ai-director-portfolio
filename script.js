@@ -297,6 +297,8 @@ document.addEventListener('click',event=>{
   const frame=playButton.closest('.lazy-video');
   const source=getProjectVideoSource(frame);
   if(!source)return;
+  const preservedScrollY=window.scrollY;
+  const restoreScroll=()=>{if(!(document.fullscreenElement||document.webkitFullscreenElement)&&Math.abs(window.scrollY-preservedScrollY)>2)window.scrollTo({top:preservedScrollY,left:0,behavior:'instant'});};
   releaseProjectVideo();
   const player=videoWarmCache.get(frame)||document.createElement('video');
   const status=document.createElement('div');
@@ -333,6 +335,7 @@ document.addEventListener('click',event=>{
   let waited=0;
   const beginPlayback=()=>{
     if(activeProjectVideo!==player)return;
+    restoreScroll();
     clearInterval(activeBufferTimer);
     status.classList.remove('is-visible');
     player.controls=true;
@@ -356,6 +359,7 @@ document.addEventListener('click',event=>{
     status.classList.add('is-visible');
   });
   player.addEventListener('playing',()=>{
+    restoreScroll();
     positionVideoWatermarks(frame);
     status.classList.remove('is-visible');
     setVideoPerformanceMode(true);
@@ -375,18 +379,21 @@ document.addEventListener('click',event=>{
     status.textContent='视频加载失败，请刷新后重试';
     status.classList.add('is-visible');
   });
-  fullscreenButton.addEventListener('click',async()=>{
+  fullscreenButton.addEventListener('click',async event=>{
+    event.preventDefault();event.stopPropagation();
+    const beforeFullscreen=window.scrollY;
     try{
       if(document.fullscreenElement||document.webkitFullscreenElement){
         await (document.exitFullscreen?.()||document.webkitExitFullscreen?.());
-      }else if(frame.requestFullscreen){
-        await frame.requestFullscreen();
-      }else if(frame.webkitRequestFullscreen){
-        frame.webkitRequestFullscreen();
       }else if(player.requestFullscreen){
         await player.requestFullscreen();
+      }else if(frame.webkitRequestFullscreen){
+        frame.webkitRequestFullscreen();
+      }else if(frame.requestFullscreen){
+        await frame.requestFullscreen();
       }
     }catch(_e){}
+    if(!(document.fullscreenElement||document.webkitFullscreenElement))window.scrollTo({top:beforeFullscreen,left:0,behavior:'instant'});
   });
 });
 document.addEventListener('fullscreenchange',syncFullscreenVideoMode);
@@ -544,6 +551,7 @@ function closeImageLightbox(){
   imageLightboxImage.alt='';
   imageLightboxCaption.textContent='';
   document.body.style.overflow=lightboxPreviousOverflow;
+  document.documentElement.classList.remove('image-lightbox-open');
 }
 function openImageLightbox(image){
   if(!imageLightbox||!imageLightboxImage)return;
@@ -553,6 +561,7 @@ function openImageLightbox(image){
   imageLightboxCaption.textContent=image.alt||'';
   imageLightbox.classList.add('is-open');
   imageLightbox.setAttribute('aria-hidden','false');
+  document.documentElement.classList.add('image-lightbox-open');
   document.body.style.overflow='hidden';
   imageLightboxClose?.focus();
 }
