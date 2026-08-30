@@ -255,6 +255,7 @@ const videoWarmObserver=new IntersectionObserver(entries=>entries.forEach(entry=
 document.querySelectorAll('.lazy-video').forEach(frame=>videoWarmObserver.observe(frame));
 document.querySelectorAll('.lazy-video').forEach(frame=>{
   frame.addEventListener('pointerenter',()=>{warmVideoFrame(frame);promoteWarmVideo(frame)},{passive:true});
+  frame.addEventListener('pointerdown',()=>{warmVideoFrame(frame);promoteWarmVideo(frame)},{passive:true});
   frame.addEventListener('focusin',()=>{warmVideoFrame(frame);promoteWarmVideo(frame)},{passive:true});
 });
 // Video 3 is the first large media card on the mobile scroll path. Warm its
@@ -270,7 +271,15 @@ if(criticalBoilingFrame){
 // restores a previous scroll position from its session history. Explicit
 // section hashes (for example #works) remain respected.
 if(!location.hash){
-  const resetToTop=()=>window.scrollTo(0,0);
+  // Only normalize the scroll position before the visitor starts interacting.
+  // A delayed pageshow/timeout reset used to fire when the first video was
+  // already playing, pulling the desktop page back to the top mid-playback.
+  let userInteracted=false;
+  const markInteraction=()=>{userInteracted=true};
+  ['wheel','touchstart','pointerdown','keydown'].forEach(type=>addEventListener(type,markInteraction,{passive:true,once:true}));
+  const resetToTop=()=>{
+    if(!userInteracted&&window.scrollY<2)window.scrollTo(0,0);
+  };
   resetToTop();
   addEventListener('pageshow',resetToTop,{once:true});
   setTimeout(resetToTop,80);
