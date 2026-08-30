@@ -239,6 +239,15 @@ const videoWarmObserver=new IntersectionObserver(entries=>entries.forEach(entry=
   if(entry.isIntersecting){warmVideoFrame(entry.target);videoWarmObserver.unobserve(entry.target)}
 }),{rootMargin:'1400px 0px'});
 document.querySelectorAll('.lazy-video').forEach(frame=>videoWarmObserver.observe(frame));
+// Video 3 is the first large media card on the mobile scroll path. Warm its
+// metadata during idle time so the CDN connection is ready before the user
+// reaches it, without downloading the full 110 MB stream up front.
+const criticalBoilingFrame=document.querySelector('[data-project="boiling"] .lazy-video');
+if(criticalBoilingFrame){
+  const warmCritical=()=>warmVideoFrame(criticalBoilingFrame);
+  if('requestIdleCallback' in window)requestIdleCallback(warmCritical,{timeout:1200});
+  else setTimeout(warmCritical,700);
+}
 // A plain share URL should always start at the top, even when the browser
 // restores a previous scroll position from its session history. Explicit
 // section hashes (for example #works) remain respected.
